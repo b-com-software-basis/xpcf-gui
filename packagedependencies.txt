@@ -1,0 +1,1 @@
+xpcf|2.4.0|xpcf|github|http://repository.b-com.com/amc-generic

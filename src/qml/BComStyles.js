@@ -1,0 +1,30 @@
+.pragma library
+
+var red = "#FF5050";
+var darkRed = "#c74747";
+var yellow = "#ffb400";
+var darkYellow = "#c7900d";
+var green = "#00CD78";
+var darkGreen = "#0da365";
+var blue = "#00D2F8";
+var medBlue = "#00bee6";
+var darkBlue = "#0d97b3";
+var purple = "#AA64FF";
+var darkPurple = "#A035FF";
+var darkGrey = "#323232";
+var lightGrey = "#9B9B9B";
+var grey = "#505050";
+var black = "#000000";
+var white = "#FFFFFF";
+var topTextMargin = 20;
+var leftTextMargin = 15;
+var rightMargin = 24;
+var topMargin = 64;
+var horizontalSpacing =24;
+var verticalSpacing = 15;
+var horizontalCellSpacing = 2;
+var verticalCellSpacing = 2;
+var maxwidth = 1920;
+var maxheight = 1080;
+var HorizontalComponentMargin=10;
+var VerticalComponentMargin=10
