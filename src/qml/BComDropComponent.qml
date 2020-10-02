@@ -1,12 +1,12 @@
-import QtQuick 2.3
-import QtQuick.Controls 1.4
-import QtQuick.Dialogs 1.3
-import Qt.labs.folderlistmodel 2.1
+import QtQuick 2.12
+import QtQuick.Controls 2.5
+import QtQuick.Layouts 1.12
 
 import "BComStyles.js" as BComStyles
 
 Rectangle {
     id: root
+    Layout.alignment: Qt.AlignLeft
     property alias text : titleText.text
     property alias imagepicto : titleText.source
     property alias bPictoBefore : titleText.bPictoBefore
@@ -15,7 +15,7 @@ Rectangle {
 
     property string imagePath : ""
 
-    BComTextBlock {
+    BComPictTextBlock {
         id:titleText
         enabled:true
         anchors.fill: parent;
@@ -44,7 +44,6 @@ Rectangle {
             titleText.color = BComStyles.darkGrey;
             console.log ("onDropped " + filepath);
             user.addModule(filepath)
-            modulesTableView.update()
         }
         onExited: {
             titleText.color = BComStyles.darkGrey;

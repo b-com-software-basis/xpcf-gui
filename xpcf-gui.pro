@@ -77,13 +77,7 @@ DEPLOY_TARGET = $$shell_quote($$shell_path($${OUT_PWD}/$${OUTPUTDIR}/$${TARGET}$
 DEPLOY_BINTARGETPATH = $$shell_path($${OUT_PWD}/$${OUTPUTDIR})
 DEPLOY_OPTIONS = --qmldir $$shell_quote($$shell_path($$PWD/src/qml))
 QMAKE_TARGET_COMPANY="b-com"
-QMAKE_TARGET_COPYRIGHT="Copyright (c) 2016 b-com"
-LIBS += -L$(BCOMDEVROOT)/thirdparties/ApacheThrift/lib/x64/$${OUTPUTDIR} -lthriftmd
-LIBS += -L$(BCOMDEVROOT)/thirdparties/OpenSSL-Win64/lib -lssleay32 -llibeay32
-#TODO : put same lib name on windows
-LIBS += -L$(BCOMDEVROOT)/bcomBuild/pixguardian-client/lib/$${OUTPUTDIR} -lpixguardian-client
-INCLUDEPATH += $(BCOMDEVROOT)/thirdparties/boost_1_60_0
-LIBS += -L$(BCOMDEVROOT)/thirdparties/boost_1_60_0/lib64-msvc-12.0
+QMAKE_TARGET_COPYRIGHT="Copyright (c) 2019 b-com"
 }
 
 QMAKE_LFLAGS_SONAME  = -Wl,-install_name,@executable_path/

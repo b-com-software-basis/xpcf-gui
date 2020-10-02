@@ -1,64 +1,37 @@
-import QtQuick 2.10
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
+import QtQuick 2.12
+import QtQuick.Controls 2.5
 import QtQuick.Dialogs 1.3
+import QtQuick.Layouts 1.12
 import "BComStyles.js" as BComStyles
-import SortFilterProxyModel 0.1
 
 Rectangle {
     id: configuratorRootWidget
     objectName: "configuratorRootWidget"
     color: BComStyles.darkGrey
 
-    function addComponentInfos(uuid,name) {
-        // int conversion (for sort on integer)
-        componentInfosTableViewModel.append({uuid: uuid, name: name})
+    function updateComponentInfos(component) {
+        interfacesModel.clear();
+        user.getComponentInfos(component)
     }
 
     function getComponents(moduleName) {
         user.getComponents(moduleName)
     }
 
-    function addComponentParams(name,type,values) {
-        // int conversion (for sort on integer)
-        paramsTableViewModel.append({name: name, type: type, values:values})
-    }
-
     function updateComponentParams(uuid) {
-        paramsTableViewModel.clear();
         user.getComponentParams(uuid)
-    }
-
-    function updateUnshareAllPicturesBtnState() {
-        unshareAllPicturesBtn.enabled = componentInfosTableViewModel.count > 0
-    }
-
-    BComMenuBar {
-        id: menuBar
-        productTitle: "*" + appTitle + "*"
-        currentTitle: "/ configurator"
-        helpEnabled: true
-        paramEnabled: true
-        closeEnabled: true
-        interfacesEnabled: true
-        componentsEnabled: true
-        configuratorEnabled: false
-        modulesEnabled: true
     }
 
     BComTextBlock {
         id:modulesComboboxLabel
-        enabled:true
-        bPictoBefore: false
-        anchors.top: menuBar.bottom
+        enabled:true    
+        anchors.top: parent.top
         anchors.topMargin: BComStyles.rightMargin
         anchors.left: parent.left
         bCenterText : false
         color:BComStyles.darkGrey
         text:"Select module:"
         textFontSize: 30
-        imageWidth:40
-        imageHeight:40
     }
 
     ComboBox {
@@ -73,36 +46,13 @@ Rectangle {
         width: 250
         height:30
         model: modulesModel
-        style: ComboBoxStyle {
-            background: Rectangle {
-                id: rectwkeybox
-                border.width: 2
-                border.color: BComStyles.darkGrey
-                color: BComStyles.white
-
-                Image {
-                    source: "Parameters_images/keycomboboxselectorpicto.png"
-                    anchors.right: parent.right
-                    anchors.rightMargin: -5}
-
-            }
-
-            label: BComTextStyle3 {
-
-                horizontalAlignment: parent.AlignHCenter
-                anchors.leftMargin: 10
-                font.weight: Font.Light
-                color: BComStyles.white
-                text: modulesCombobox.currentText
-            }
-        }
         onCurrentIndexChanged: {
             if (modulesCombobox.completed) {
                 user.getComponents(modulesModel.index(modulesCombobox.currentIndex,0))
                 if (componentList.count > 0) {
                     componentList.currentIndex = 0
                     if (paramsTableView.completed) {
-                        updateComponentParams(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
+                        updateComponentParams(selectedComponentTableView.currentUUID)
                     }
                     if (componentInfosTableView.completed) {
                         updateComponentInfos(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
@@ -121,9 +71,7 @@ Rectangle {
     Rectangle {
         id: contentRect
         anchors.left: parent.left
-        anchors.leftMargin: BComStyles.rightMargin
         anchors.right: parent.right
-        anchors.rightMargin: BComStyles.rightMargin
         anchors.top:modulesComboboxLabel.bottom
         anchors.topMargin: BComStyles.rightMargin
         anchors.bottom: parent.bottom
@@ -154,7 +102,6 @@ Rectangle {
         BComButton {
             id:pickButton
             enabled:true
-            bPictoBefore: false
             anchors.bottom: componentListRect.top
             anchors.bottomMargin: 10
             anchors.left: componentListRect.right
@@ -189,8 +136,7 @@ Rectangle {
                 width:35
                 height:35
                 buttonColor : "black"
-                bPictoBefore: false
-                bCenterText: true
+           //     bCenterText: true
 
                 onClicked: {
                     updateComponentInfos(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
@@ -234,6 +180,8 @@ Rectangle {
                     }
                     MouseArea {
                         anchors.fill: parent
+                        drag.target: componentItemText
+                        onReleased: parent = componentItemText.Drag.target !== null ? componentItemText.Drag.target : componentItemRect
                         onClicked: {
                             componentList.currentIndex = index
                         }
@@ -260,8 +208,7 @@ Rectangle {
                 onCurrentIndexChanged: {
                     console.log("componentList::onCurrentIndexChanged - index : " + currentIndex + " ; component : " + currentItem.name)
                     if (componentInfosTableView.completed  && modulesCombobox.completed) {
-                        componentInfosTableViewModel.clear();
-                        componentInfosTableViewModel.append({name: componentModel.element(currentIndex).name, description: componentModel.element(currentIndex).description} )
+                       updateComponentInfos(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
                     }
                 }
             }
@@ -272,6 +219,70 @@ Rectangle {
             }
         }
 
+        TableView {
+            id : componentInfosTableView
+            property bool completed: false // added this property bool in order to sort only when compoent if completely loaded
+            property var currentUUID: 0
+            columnWidthProvider: function (column) { return 200 }
+            rowHeightProvider: function (row) { return 50 }
+            height: 250
+            /*Layout {
+                fillWidth: true
+                alignment: Qt.AlignTop | Qt.AlignBottom
+                topMargin: BComStyles.verticalSpacing
+            }*/
+            anchors {
+                left: parent.left
+                leftMargin: BComStyles.rightMargin
+                right: componentListRect.right
+                top: componentListRect.bottom
+                topMargin: BComStyles.rightMargin
+            }
+
+            model: interfacesModel
+            focus: true
+            delegate: textDelegate
+            Component.onCompleted: {
+                completed = true
+                if (modulesCombobox.completed) {
+                    updateComponentInfos(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
+                }
+            }
+            // Delegate - text items
+            Component {
+                id: textDelegate
+                Rectangle {
+                    color: "transparent"
+                    implicitWidth: 250
+                    implicitHeight: 50
+                    BComTextStyle3
+                    {
+                        id: rowText
+                        anchors.fill: parent
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        anchors.leftMargin: BComStyles.verticalSpacing
+                        text: tabledata
+                        elide: Text.ElideRight
+                        color: "white"
+                    }
+                    MouseArea {
+                        id: mouseRegion
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: {
+                            if (mouse.button & Qt.RightButton) {
+                            console.log( "Clicked" + rowText.text + modulesModel.uuid(modulesModel.index(row,0)))
+                            modulesTableView.currentUUID = modulesModel.uuid(modulesModel.index(row,0))
+                            modulesStack.currentIndex = 1
+                            }
+                        }
+                    }
+                }
+             }
+        }
+/*
         TableView {
             id : componentInfosTableView
             property bool completed: false // added this property bool in order to sort only when compoent if completely loaded
@@ -414,7 +425,7 @@ Rectangle {
                 id: componentInfosTableViewModel
             }
 
-        }
+        }*/
 
         //        Rectangle {
         //            id: selectedComponentListRect
@@ -504,180 +515,92 @@ Rectangle {
 
             TableView {
                 id : selectedComponentTableView
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.topMargin: BComStyles.verticalSpacing
-                anchors.bottom: parent.bottom
-                sortIndicatorVisible : true
-                model: appComponentModel
-                currentRow: appComponentModel.rowCount ? 0 : -1
-                rowDelegate : selectedComponentRowDelegateItem
-                headerDelegate: selectedComponentHeaderDelegateItem
-                backgroundVisible : false // fix white area at resize
-                focus: true
+                property bool completed: false // added this property bool in order to sort only when compoent if completely loaded
+                property var currentUUID: 0
+                columnWidthProvider: function (column) { return 200 }
+                rowHeightProvider: function (row) { return 50 }
+                height: 250
+                /*Layout {
+                    fillWidth: true
+                    alignment: Qt.AlignTop | Qt.AlignBottom
+                    topMargin: BComStyles.verticalSpacing
+                }*/
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                    topMargin: BComStyles.verticalSpacing
+                    bottom: parent.bottom
+                }
 
+                model: appComponentModel
+                focus: true
+                delegate: selectedComponentTextDelegate
                 Component.onCompleted: {
                 }
-
-                // Style
-                /*style: TableViewStyle {
-                    frame: Rectangle {
-                        border.color: BComStyles.darkGrey
-                        color: BComStyles.black
-                    }
-                }*/
-
-                // Columns Defintion
-                TableViewColumn {
-                    role: "description"
-                    title: "module UUID"
-                    delegate: selectedComponentTextDelegate
-                    Component.onCompleted: {
-                        width = selectedComponentTableView.width/3;
-                    }
-                    onWidthChanged: {
-                        // manage minimum width
-                        if (width < 100) {
-                            width = 100;
-                        }
-                    }
-                }
-
-                TableViewColumn {
-                    role: 'name'
-                    title: "name"
-                    delegate: selectedComponentTextDelegate
-                    Component.onCompleted: {
-                        width = selectedComponentTableView.width/3;
-                    }
-                    onWidthChanged:
-                    {   // manage minimum width
-                        if (width < 150) {
-                            width = 150;
-                        }
-                    }
-                }
-
-                TableViewColumn {
-                    role: "description"
-                    title: ""
-                    delegate: removeComponentDelegate
-                    Component.onCompleted: {
-                        width = 0;
-                    }
-                    onWidthChanged: {
-                        // manage minimum width
-                        if (width < 50) {
-                            width = 50;
-                        }
-                    }
-                }
-
                 // Delegate - text items
                 Component {
                     id: selectedComponentTextDelegate
                     Rectangle {
+                        id: selectedComponentDelegateRect
                         color: "transparent"
+                        implicitWidth: 250
+                        implicitHeight: 50
                         BComTextStyle3
                         {
+                            id: rowText
                             anchors.fill: parent
                             verticalAlignment: Text.AlignVCenter
                             horizontalAlignment: Text.AlignHCenter
                             anchors.leftMargin: BComStyles.verticalSpacing
-                            text: styleData.value.toLocaleString(Qt.locale(),("yyyy-MM-dd"))
+                            text: tabledata
                             elide: Text.ElideRight
                             color: "white"
                         }
+                        MouseArea {
+                            id: mouseRegion
+                            acceptedButtons: Qt.LeftButton | Qt.RightButton
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onClicked: {
+                                if (mouse.button & Qt.LeftButton) {
+                                console.log( "Clicked" + rowText.text + appComponentModel.uuid(appComponentModel.index(row,0)))
+                                updateComponentParams(appComponentModel.uuid(appComponentModel.index(row,0)))
+                                //modulesStack.currentIndex = 1
+                                }
+                            }
+                        }
                     }
-                }
+                 }
+            }
 
                 // Delegate - text items
-                Component {
-                    id: removeComponentDelegate
-                    Rectangle {
-                        color: "transparent"
+//                Component {
+//                    id: removeComponentDelegate
+//                    Rectangle {
+//                        color: "transparent"
 
-                        BComButton {
-                            Image {source:"images/trashpicto.png"
-                                anchors.centerIn: parent
-                                scale:  0.45}
-                            id:removeComponentButton
-                            anchors.centerIn: parent
-                            buttonColor : "black"
-                            bPictoBefore: false
-                            bCenterText: true
-                            width: 35
-                            onClicked:  {
-                                user.unpickComponent(styleData.value,appComponentModel.index(selectedComponentTableView.currentIndex,0));
-                            }
+//                        BComButton {
+//                            Image {source:"images/trashpicto.png"
+//                                anchors.centerIn: parent
+//                                scale:  0.45}
+//                            id:removeComponentButton
+//                            anchors.centerIn: parent
+//                            buttonColor : "black"
+//    //                        bCenterText: true
+//                            width: 35
+//                            onClicked:  {
+//                                user.unpickComponent(styleData.value,appComponentModel.index(selectedComponentTableView.currentIndex,0));
+//                            }
 
-                            Component.onCompleted: {
-                                removeComponentButton.enabled = true;
-                            }
-                            tooltip: "delete module from list"
-                        }
-                    }
-                }
+//                            Component.onCompleted: {
+//                                removeComponentButton.enabled = true;
+//                            }
+//                            tooltip: "delete module from list"
+//                        }
+//                    }
+//                }
 
-                // Delegate - row height
-                Component {
-                    id: selectedComponentRowDelegateItem
-                    Rectangle
-                    {
-                        height: 50
-                        color: "black"
-                    }
-                }
-
-                // Delegate - header
-                Component {
-                    id: selectedComponentHeaderDelegateItem
-                    Rectangle {
-                        height: textItem.implicitHeight * 1.5
-                        width: textItem.implicitWidth
-                        color: BComStyles.darkGrey
-                        BComTextStyle3 {
-                            id: textItem
-                            anchors.fill: parent
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignHCenter
-                            anchors.leftMargin: 12
-                            text: styleData.value
-                            elide: Text.ElideRight
-                            color: BComStyles.white
-                            font.weight: Font.Light
-                        }
-
-                        Rectangle {
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            anchors.bottom: parent.bottom
-                            anchors.bottomMargin: 1
-                            anchors.topMargin: 1
-                            width: 1
-                            color: "#ccc"
-                        }
-
-                        Image {
-                            id: name
-                            source: {
-                                if (selectedComponentTableView.sortIndicatorOrder === Qt.AscendingOrder) {
-                                    "images/chevrondown.png"
-                                }
-                                else {
-                                    "images/chevronup.png"
-                                }
-                            }
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.top: parent.top
-                            visible: {
-                                styleData.column===selectedComponentTableView.sortIndicatorColumn ? true: false
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         // Separator
@@ -700,7 +623,6 @@ Rectangle {
         BComTextBlock {
             id:parametersLabel
             enabled:true
-            bPictoBefore: false
             anchors.top: separatorRect.bottom
             anchors.topMargin: BComStyles.rightMargin
             anchors.left: componentListRect.right
@@ -709,186 +631,100 @@ Rectangle {
             color:BComStyles.darkGrey
             text:"Component parameters :"
             textFontSize: 20
-            imageWidth:40
-            imageHeight:40
         }
 
+        StackLayout {
+            id: paramsStack
+            anchors {
+                left: componentListRect.right
+                leftMargin: BComStyles.rightMargin
+                right: parent.right
+                rightMargin: BComStyles.rightMargin
+                top: parametersLabel.bottom
+                topMargin: BComStyles.rightMargin
+                bottom: parent.bottom
+                bottomMargin: BComStyles.rightMargin
+            }
+            //anchors.fill: parent
         TableView {
             id : paramsTableView
             property bool completed: false // added this property bool in order to sort only when compoent if completely loaded
-            anchors.left: componentListRect.right
-            anchors.leftMargin: BComStyles.rightMargin
-            anchors.right: parent.right
-            anchors.rightMargin: BComStyles.rightMargin
-            anchors.top: parametersLabel.bottom
-            anchors.topMargin: BComStyles.rightMargin
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: BComStyles.rightMargin
-            sortIndicatorVisible : true
-            currentRow: rowCount ? 0 : -1
-            rowDelegate : paramsRowDelegateItem
-            headerDelegate: paramsHeaderDelegateItem
-            backgroundVisible : false // fix white area at resize
+            property var currentName: 0
+            columnWidthProvider: function (column) { return 200 }
+            rowHeightProvider: function (row) { return 50 }
+            height: 250
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignTop | Qt.AlignBottom
+            Layout.topMargin: BComStyles.verticalSpacing
 
+            focus: true
+            delegate: paramsTextDelegate
             Component.onCompleted: {
                 completed = true
                 if (modulesCombobox.completed) {
-                    updateComponentParams(appComponentModel.uuid(appComponentModel.index(selectedComponentList.currentIndex,0)))
+                    updateComponentParams(selectedComponentTableView.currentUUID)
                 }
             }
-
-            // Style
-            style: TableViewStyle {
-                frame: Rectangle {
-                    border{
-                        color: BComStyles.darkGrey
-                    }
-                    color: BComStyles.black
-                }
-            }
-
-            // Columns Defintion
-            TableViewColumn {
-                role: "name"
-                title: "name"
-                delegate: paramsTextDelegate
-                Component.onCompleted: {
-                    width = paramsTableView.width/3;
-                }
-                onWidthChanged:
-                {   // manage minimum width
-                    if (width < 150) {
-                        width = 150;
-                    }
-                }
-            }
-            TableViewColumn {
-                role: "type"
-                title: "type"
-                delegate: paramsTextDelegate
-                Component.onCompleted: {
-                    width = paramsTableView.width/3;
-                }
-                onWidthChanged: {
-                    // manage minimum width
-                    if (width < 80) {
-                        width = 80;
-                    }
-                }
-            }
-            TableViewColumn {
-                role: "values"
-                title: "values"
-                delegate: paramsTextDelegate
-                Component.onCompleted: {
-                    width = paramsTableView.width/3;
-                }
-                onWidthChanged: {
-                    // manage minimum width
-                    if (width < 80) {
-                        width = 80;
-                    }
-                }
-            }
-
-            // Sort
-            model: SortFilterProxyModel {
-                id: paramsProxyModel
-                source: paramsTableViewModel.count > 0 ? paramsTableViewModel : null
-                sortOrder: paramsTableView.sortIndicatorOrder
-                sortCaseSensitivity: Qt.CaseInsensitive
-                sortRole: {
-                    // manage sort of last column (remove 'image') with data of first column
-                    var sortIndicatorColumn = paramsTableView.sortIndicatorColumn;
-                    if (paramsTableView.sortIndicatorColumn === paramsTableView.columnCount-1) {
-                        sortIndicatorColumn = 0;
-                    }
-                    paramsTableViewModel.count > 0 ? paramsTableView.getColumn(sortIndicatorColumn).role : ""
-                }
-            }
-
             // Delegate - text items
             Component {
                 id: paramsTextDelegate
                 Rectangle {
                     color: "transparent"
+                    implicitWidth: 250
+                    implicitHeight: 50
                     BComTextStyle3
                     {
+                        id: rowText
                         anchors.fill: parent
                         verticalAlignment: Text.AlignVCenter
                         horizontalAlignment: Text.AlignHCenter
                         anchors.leftMargin: BComStyles.verticalSpacing
-                        text: styleData.value
+                        text: tabledata
                         elide: Text.ElideRight
                         color: "white"
                     }
-                }
-            }
-
-            // Delegate - row height
-            Component {
-                id: paramsRowDelegateItem
-                Rectangle
-                {
-                    height: 50
-                    color: "black"
-                }
-            }
-
-            // Delegate - header
-            Component {
-                id: paramsHeaderDelegateItem
-                Rectangle {
-                    height: textItem.implicitHeight * 1.5
-                    width: textItem.implicitWidth
-                    color: BComStyles.darkGrey
-                    BComTextStyle3 {
-                        id: textItem
+                    MouseArea {
+                        id: mouseRegion
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton
                         anchors.fill: parent
-                        verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignHCenter
-                        anchors.leftMargin: 12
-                        text: styleData.value
-                        elide: Text.ElideRight
-                        color: BComStyles.white
-                        font.weight: Font.Light
-                    }
-
-                    Rectangle {
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: 1
-                        anchors.topMargin: 1
-                        width: 1
-                        color: "#ccc"
-                    }
-
-                    Image {
-                        id: name
-                        source: {
-                            if (paramsTableView.sortIndicatorOrder === Qt.AscendingOrder) {
-                                "images/chevrondown.png"
+                        hoverEnabled: true
+                        onClicked: {
+                            if (mouse.button & Qt.LeftButton) {
+                                console.log( "Clicked" + rowText.text + parametersModel.uuid(parametersModel.index(row,0)))
+                                paramsTableView.currentName = parametersModel.uuid(parametersModel.index(row,0))
+                                paramsStack.currentIndex = 1
                             }
-                            else {
-                                "images/chevronup.png"
-                            }
-                        }
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.top: parent.top
-                        visible: {
-                            styleData.column===paramsTableView.sortIndicatorColumn ? true: false
                         }
                     }
                 }
-            }
-            ListModel {
-                id: paramsTableViewModel
-                onCountChanged: {
-                    saveButton.enabled = paramsTableViewModel.count > 0
-                }
-            }
+             }
 
+            model: parametersModel
+        }
+        Frame {
+            id: paramFrame
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignTop | Qt.AlignBottom
+            Layout.topMargin: BComStyles.verticalSpacing
+
+            BComButton {
+                id:closeFrameButton
+                anchors.right: parent.right
+                height: 40
+                enabled:true
+                width:90
+                buttonColor : "blue"
+                text:"Close"
+                onClicked: {
+                    paramsStack.currentIndex = 0
+                }
+                tooltip: "Close"
+            }
+            Text {
+                text: paramsTableView.currentName
+                color: BComStyles.white
+            }
+        }
         }
     }
 
@@ -926,7 +762,7 @@ Rectangle {
 
     Component.onCompleted: {
         if (paramsTableView.completed && modulesCombobox.completed) {
-            updateComponentParams(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
+            updateComponentParams(selectedComponentTableView.currentUUID)
         }
         if (componentInfosTableView.completed  && modulesCombobox.completed) {
             updateComponentInfos(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))

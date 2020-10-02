@@ -1,11 +1,15 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.5
-import QtQuick.Layouts 1.12
 import "BComStyles.js" as BComStyles
 
 Button {
-    id: rootButton
+    id: root
+
+    property alias styledText : bgr.text
     property alias tooltip : buttonTooltip.text
+    property alias imagepicto : bgr.source
+    property alias bCenterText : bgr.bCenterText
+    property alias bPictoBefore : bgr.bPictoBefore
     property string buttonColor
     property color defaultBgColor: BComStyles.grey
     property color disabledBgColor: BComStyles.grey
@@ -13,15 +17,17 @@ Button {
     property color clickedBgColor: BComStyles.darkBlue
     property color textColor: BComStyles.white
     property color textColorSelected: BComStyles.blue
+    property alias textFontSize : bgr.textFontSize
+    property alias textFontFamily : bgr.textFontFamily
     property bool bStateButton : false
+
+
     checked : false
     enabled : false
-    width: implicitWidth
-    bottomPadding: 1
 
     opacity: pressed ? 72 : 100
     onHoveredChanged: {
-        if (!rootButton.enabled)
+        if (!root.enabled)
             indicatorRect.color = disabledBgColor
         else
         {
@@ -40,7 +46,7 @@ Button {
     }
 
     onPressedChanged: {
-        if (!rootButton.pressed) {
+        if (!root.pressed) {
             if (hovered) {
                 indicatorRect.color = hoverBgColor
             }
@@ -60,7 +66,7 @@ Button {
     }
 
     onEnabledChanged: {
-        rootButton.enabled ? indicatorRect.color = defaultBgColor : indicatorRect.color = clickedBgColor
+        root.enabled ? indicatorRect.color = defaultBgColor : indicatorRect.color = clickedBgColor
     }
 
     onButtonColorChanged: {
@@ -109,40 +115,24 @@ Button {
         root.bStateButton ? indicatorRect.color = clickedBgColor : indicatorRect.color =  defaultBgColor
     }
 
-    contentItem :
-        Text {
-        text: rootButton.text
-        font.family :  bcom.name
-        font.pixelSize: 18
-        font.weight:Font.Light
-        font.letterSpacing: 0.1
-        color:BComStyles.white
-        opacity: enabled ? 1.0 : 0.3
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        elide: Text.ElideRight
-    }
-
-    background:
-        Item {
-        id: bgr
-        anchors.fill: rootButton
-        implicitHeight: 40
-        Rectangle {
+    contentItem: Rectangle {
         id: mainRect
-        anchors.top: bgr.top
+        anchors.fill: parent
+        BComPictTextBlock {
+        id: bgr
+        anchors.top: parent.top
         anchors.bottom: indicatorRect.top
-        border.width: 4
-        border.color: BComStyles.green
-        color: BComStyles.black
+        anchors.left: parent.left
+        anchors.right: parent.right
+        color: "black"
+        opacity: root.pressed ? 72 : 100
         }
         Rectangle {
             id: indicatorRect
-            anchors.left: bgr.left
-            anchors.right: bgr.right
-            anchors.bottom: bgr.bottom
-            height: 2
-            //opacity: enabled ? 1 : 0.3
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height:2
             color: BComStyles.black
         }
     }

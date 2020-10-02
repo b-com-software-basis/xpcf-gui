@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include "LoadSaveWidget.h"
 #include <iostream>
+#include <QQmlContext>
 
 #include "DataPaths.h"
 
@@ -40,11 +41,11 @@ using namespace std;
 #endif
 #endif
 
-QMLProxy::QMLProxy(CustomTableModel & componentModel,CustomTableModel & modulesModel,
+QMLProxy::QMLProxy(QQmlApplicationEngine * engine, CustomTableModel & componentModel,CustomTableModel & modulesModel,
                    CustomTableModel & interfacesModel, CustomTableModel & appComponentModel,
-                   CustomTableModel & allInterfacesModel, QStringListModel & parameterValues):
+                   CustomTableModel & allInterfacesModel, CustomTableModel & parametersModel, QStringListModel & parameterValues): m_engine(engine),
     m_componentModel(componentModel),m_modulesModel(modulesModel), m_interfacesModel(interfacesModel),
-    m_appComponentModel(appComponentModel),m_allInterfacesModel(allInterfacesModel),m_parameterValues(parameterValues)
+    m_appComponentModel(appComponentModel),m_allInterfacesModel(allInterfacesModel),m_parametersModel(parametersModel),m_parameterValues(parameterValues)
 {
     m_logger.add_attribute("ClassName", boost::log::attributes::constant<std::string>("QMLProxy"));
 
@@ -92,9 +93,32 @@ bool QMLProxy::populateInterfaces(SPtr<xpcf::ModuleMetadata> moduleInfos)
     return true;
 }
 
-bool QMLProxy::addModule(const QUrl & pictureUrl)
+void QMLProxy::registerModuleInformations(SPtr<org::bcom::xpcf::ModuleMetadata> moduleInfos)
 {
-    QString localFilePath = pictureUrl.toLocalFile();
+    QString uuid = to_string(moduleInfos->getUUID()).c_str();
+    if (m_moduleMap.find(uuid) == m_moduleMap.end()) {
+        m_moduleMap[uuid] = moduleInfos;
+        Element e = makeElement<xpcf::ModuleMetadata>(*moduleInfos);
+        e.m_description = moduleInfos->getPath();
+        m_modulesModel.addData(e);
+        populateInterfaces(moduleInfos);
+    }
+}
+
+bool QMLProxy::loadModules(const QUrl & folderUrl, bool bRecurse)
+{
+    QString localFolderPath = folderUrl.toLocalFile();
+    SRef<xpcf::IComponentManager> xpcfComponentManager = xpcf::getComponentManagerInstance();
+    xpcfComponentManager->loadModules(localFolderPath.toStdString().c_str(), bRecurse);
+    for (auto moduleInfos : xpcfComponentManager->getModulesMetadata()) {
+        registerModuleInformations(moduleInfos);
+    }
+    return true;
+}
+
+bool QMLProxy::addModule(const QUrl & moduleUrl)
+{
+    QString localFilePath = moduleUrl.toLocalFile();
     QFileInfo moduleInf(localFilePath);
     QString name, path, uuid;
     name = moduleInf.baseName();
@@ -107,14 +131,7 @@ bool QMLProxy::addModule(const QUrl & pictureUrl)
             std::cout<<"            -> UUID = '"<<moduleInfos->getUUID()<<"'"<<std::endl;
             std::cout<<"            -> path = '"<<moduleInfos->getPath()<<"'"<<std::endl;
             std::cout<<"            -> fullpath = '"<<moduleInfos->getFullPath()<<"'"<<std::endl;
-            uuid = to_string(moduleInfos->getUUID()).c_str();
-            if (m_moduleMap.find(uuid) == m_moduleMap.end()) {
-                m_moduleMap[uuid]=moduleInfos;
-                Element e = makeElement<xpcf::ModuleMetadata>(*moduleInfos);
-                e.m_description = moduleInfos->getPath();
-                m_modulesModel.addData(e);
-                populateInterfaces(moduleInfos);
-            }
+            registerModuleInformations(moduleInfos);
         }
     }
     catch (xpcf::Exception &e) {
@@ -337,27 +354,23 @@ void QMLProxy::getComponentParams(const QString & uuid)
     if (m_componentsMap.find(uuid) == m_componentsMap.end()) {
         return;
     }
-    QQuickItem* componentsRootWidget = m_viewer->rootObject()->findChild<QQuickItem*>("componentsRootWidget");
-    if (componentsRootWidget != 0) {
-        SRef<xpcf::IComponentIntrospect> componentRef = m_componentsMap[uuid];
-        if (componentRef->implements<xpcf::IConfigurable>()) {
-            SRef<xpcf::IConfigurable> rIConfigurable = componentRef->bindTo<xpcf::IConfigurable>();
-            map<xpcf::uuids::uuid,SRef<xpcf::IPropertyMap>> paramsMap;
-            if (rIConfigurable->hasProperties()) {
-                for (auto property : rIConfigurable->getProperties()) {
-                    if (rIConfigurable->getProperties().size() == 0) {
-                        std::cout<<"ERROR : no movenext "<<std::endl;
-                        break;
-                    }
-                    else {
-                        QString name(property->getName());
-                        QString type(propertyType2strMap[property->getType()].c_str());
-                        QMetaObject::invokeMethod(componentsRootWidget, "addComponentParams",Q_ARG(QVariant, (QString)name),
-                                                  Q_ARG(QVariant, (QString)type),
-                                                  Q_ARG(QVariant, (QString)type));
 
-                        //displayParameter(property);
-                    }
+    m_parametersModel.clear();
+    SRef<xpcf::IComponentIntrospect> componentRef = m_componentsMap[uuid];
+    if (componentRef->implements<xpcf::IConfigurable>()) {
+        SRef<xpcf::IConfigurable> rIConfigurable = componentRef->bindTo<xpcf::IConfigurable>();
+        map<xpcf::uuids::uuid,SRef<xpcf::IPropertyMap>> paramsMap;
+        if (rIConfigurable->hasProperties()) {
+            for (auto property : rIConfigurable->getProperties()) {
+                if (rIConfigurable->getProperties().size() == 0) {
+                    std::cout<<"ERROR : no movenext "<<std::endl;
+                    break;
+                }
+                else {
+                    QString name(property->getName());
+                    QString type(propertyType2strMap[property->getType()].c_str());
+                    Element e(name,type,"");
+                    m_parametersModel.addData(e);
                 }
             }
         }
@@ -369,7 +382,7 @@ void QMLProxy::getParameterInfos(const QString & uuid,const QString & paramName)
     if (m_componentsMap.find(uuid) == m_componentsMap.end()) {
         return;
     }
-    QQuickItem* componentsRootWidget = m_viewer->rootObject()->findChild<QQuickItem*>("componentsRootWidget");
+    QQuickItem* componentsRootWidget = m_engine->rootContext()->findChild<QQuickItem*>("componentsRootWidget");
     if (componentsRootWidget != 0) {
         SRef<xpcf::IComponentIntrospect> componentRef = m_componentsMap[uuid];
         if (componentRef->implements<xpcf::IConfigurable>()) {
@@ -411,7 +424,7 @@ void QMLProxy::getParameterInfos(const QString & uuid,const QString & paramName)
 void QMLProxy::getModules()
 {
     for (auto & m : m_moduleMap) {
-        QQuickItem* modulesRootWidget = m_viewer->rootObject()->findChild<QQuickItem*>("modulesRootWidget");
+        QQuickItem* modulesRootWidget = m_engine->rootContext()->findChild<QQuickItem*>("modulesRootWidget");
         if (modulesRootWidget != 0) {
             Element e;
             e.m_name = m.second->name();
@@ -505,7 +518,7 @@ void QMLProxy::handleError(std::string contextName, xpcf::Exception & ex)
 {
     //m_errorCode = errorCode;
 
-    QQuickItem* rootWidget = m_viewer->rootObject();
+    QQuickItem* rootWidget = m_engine->rootContext()->findChild<QQuickItem*>("rootWindow");
     std::string title = "Error";
     if (errorType2TitleMap.find(ex.getErrorCode()) != errorType2TitleMap.end()) {
         title = errorType2TitleMap.at(ex.getErrorCode());

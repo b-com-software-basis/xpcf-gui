@@ -4,11 +4,15 @@ import "BComStyles.js" as BComStyles
 
 Rectangle {
     id: root
+    property bool bPictoBefore : true
     property bool bCenterText : false
     property bool labelVerticalCentered : true
     property bool pictoVerticalCentered : true
     property string textColor : "white"
     color: BComStyles.grey
+    property alias source : imgPicto.source
+    property alias imageWidth : imgPicto.width
+    property alias imageHeight : imgPicto.height
     property alias text : textLabel.text
     property alias textFontSize : textLabel.font.pixelSize
     property alias textFontFamily : textLabel.font.family
@@ -22,24 +26,49 @@ Rectangle {
 
     Rectangle {
         id: blockRect
-        anchors {
-            left:parent.left
-            leftMargin: 15
-            verticalCenter: parent.verticalCenter
-        }
-        height: textLabel.height
-        width: textLabel.width
+        anchors.left:parent.left
+        anchors.leftMargin: 15
+        anchors.verticalCenter: parent.verticalCenter
+        height: (imgPicto.height > textLabel.height ? imgPicto.height : textLabel.height)
+        width: imgPicto.width + 25 + textLabel.width
         color:"transparent"
+        Image {
+            id: imgPicto
+            width:18
+            height:18
+            visible:true
+            source:""
+        }
         BComTextStyle3 {
             id: textLabel
-            anchors {
-                left : parent.left
-                leftMargin : BComStyles.leftTextMargin
-                verticalCenter: parent.verticalCenter
-            }
+            anchors.left : imgPicto.right
+            anchors.leftMargin : BComStyles.leftTextMargin
             color: textColor
+            anchors.verticalCenter: parent.verticalCenter
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
+        }
+    }
+    onBPictoBeforeChanged: {
+        if (bPictoBefore) {
+            if (imgPicto.status !== Image.Null) {
+                imgPicto.anchors.left = blockRect.left
+                imgPicto.anchors.leftMargin = 0
+                textLabel.anchors.left = imgPicto.right
+                textLabel.anchors.leftMargin = BComStyles.leftTextMargin
+             }
+            else {
+                textLabel.anchors.left = blockRect.left
+                textLabel.anchors.leftMargin = 0
+           }
+        }
+        else {
+            textLabel.anchors.left = blockRect.left
+            textLabel.anchors.leftMargin = 0
+            if (imgPicto.status !== Image.Null) {
+                imgPicto.anchors.left = textLabel.right
+                imgPicto.anchors.leftMargin = 25
+            }
         }
     }
     onBCenterTextChanged: {
@@ -64,6 +93,20 @@ Rectangle {
             blockRect.anchors.top = undefined
             blockRect.anchors.topMargin = undefined
             blockRect.anchors.verticalCenter = root.verticalCenter
+        }
+    }
+    onPictoVerticalCenteredChanged: {
+        if (pictoVerticalCentered) {
+            imgPicto.anchors.verticalCenter = blockRect.verticalCenter
+        }
+        else {
+            imgPicto.anchors.verticalCenter = undefined
+        }
+    }
+
+    Component.onCompleted: {
+        if (imgPicto.status === Image.Null) {
+            blockRect.width = textLabel.paintedWidth
         }
     }
 }

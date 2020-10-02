@@ -58,8 +58,8 @@ int main(int argc, char *argv[])
     logging::core::get()->set_filter( logging::trivial::severity >= logging::trivial::info );
     logging::add_common_attributes();
 
-
-    QQuickView viewer;
+    QQmlApplicationEngine engine;
+//    QQuickView viewer;
     CustomTableModel componentModel;
     CustomTableModel appComponentModel;
     QStringListModel  parameterValuesModel;
@@ -68,36 +68,29 @@ int main(int argc, char *argv[])
     CustomTableModel interfacesModel;
     CustomTableModel allInterfacesModel;
     CustomTableModel componentParamsModel;
-    QMLProxy proxy(componentModel,modulesModel,interfacesModel,appComponentModel,allInterfacesModel,parameterValuesModel);
+    CustomTableModel parametersModel;
+    QMLProxy proxy(&engine,componentModel,modulesModel,interfacesModel,appComponentModel,allInterfacesModel,parametersModel,parameterValuesModel);
     //qmlRegisterUncreatableType<Element>("org.bcom.xpcf.gui",1,0,"Element","Element is for reading only");
     qmlRegisterInterface<Element>("Element");
-    viewer.rootContext()->setContextProperty("user", &proxy);
-    viewer.rootContext()->setContextProperty("componentModel", &componentModel);
-    viewer.rootContext()->setContextProperty("appComponentModel", &appComponentModel);
-    viewer.rootContext()->setContextProperty("modulesModel", &modulesModel);
-    viewer.rootContext()->setContextProperty("interfacesModel", &interfacesModel);
-    viewer.rootContext()->setContextProperty("allInterfacesModel", &allInterfacesModel);
-    viewer.rootContext()->setContextProperty("parameterValuesModel", &parameterValuesModel);
-
-    // App Title
-    QString appTitle = "xpcf Configuration Editor";
-    viewer.rootContext()->setContextProperty("appTitle", QVariant::fromValue(appTitle));
+    engine.rootContext()->setContextProperty("user", &proxy);
+    engine.rootContext()->setContextProperty("componentModel", &componentModel);
+    engine.rootContext()->setContextProperty("appComponentModel", &appComponentModel);
+    engine.rootContext()->setContextProperty("modulesModel", &modulesModel);
+    engine.rootContext()->setContextProperty("interfacesModel", &interfacesModel);
+    engine.rootContext()->setContextProperty("allInterfacesModel", &allInterfacesModel);
+    engine.rootContext()->setContextProperty("parametersModel", &parametersModel);
+    engine.rootContext()->setContextProperty("parameterValuesModel", &parameterValuesModel);
 
     // version
     QString version = MYVERSIONSTRING;
-    viewer.rootContext()->setContextProperty("version", QVariant::fromValue(version));
+    engine.rootContext()->setContextProperty("version", QVariant::fromValue(version));
 
-    viewer.setSource(QUrl("qrc:///qml/main.qml"));
-    proxy.setViewer(&viewer);
+    engine.load(QUrl("qrc:///qml/main.qml"));
+//    proxy.setViewer(&viewer);
    /* ImageOverlayProvider *imageProvider = new ImageOverlayProvider(QQmlImageProviderBase::Image);
     viewer.engine()->addImageProvider("imageOverlayProvider",imageProvider);*/
 
-    QObject::connect(viewer.engine(), SIGNAL(quit()), &viewer, SLOT(close()));
 
-    viewer.setResizeMode(QQuickView::SizeRootObjectToView);
-    viewer.setMinimumSize(QSize(1440,800));
-    viewer.show();
-    viewer.setTitle(appTitle);
 
     return app.exec();
 }

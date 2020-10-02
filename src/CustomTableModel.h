@@ -53,6 +53,11 @@ public:
         m_description = el.m_description;
     }
 
+    static int dataCount() { return s_dataCount; }
+
+private:
+    static constexpr int s_dataCount = 3;
+
 };
 
 template <typename T>
@@ -76,18 +81,22 @@ Q_OBJECT
 Q_ENUMS(CustomTableModelRoles)
 
 public:
-    enum CustomTableModelRoles {
-        UUIDRole = Qt::UserRole + 1,
+    enum CustomTableModelRoles{
+        TableDataRole = Qt::UserRole + 1,
+        HeadingRole,
+        UUIDRole,
         NameRole,
         DescriptionRole
     };
 
     QHash<int, QByteArray> roleNames() const override {
         QHash<int, QByteArray> roles;
-        roles[UUIDRole] = "uuid";
-        roles[NameRole] = "name";
-        roles[DescriptionRole] = "description";
-        return roles;
+         roles[TableDataRole] = "tabledata";
+         roles[HeadingRole] = "heading";
+         roles[UUIDRole] = "uuid";
+         roles[NameRole] = "name";
+         roles[DescriptionRole] = "description";
+     return roles;
     }
 
     CustomTableModel(QObject* parent = Q_NULLPTR);
@@ -98,7 +107,7 @@ public:
     Q_INVOKABLE QString uuid(const QModelIndex &index);
     Q_INVOKABLE Element* element(const QModelIndex &index) const;
     Q_INVOKABLE Element* element(int listIndex) const;
-    QVariant data(const QModelIndex &index, int role = CustomTableModelRoles::UUIDRole) const override;
+    QVariant data(const QModelIndex &index, int role) const override;
     bool setData(const QModelIndex &index, const QVariant &value, int role) override;
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role = Qt::DisplayRole) const override;

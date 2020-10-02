@@ -3,15 +3,17 @@
 CustomTableModel::CustomTableModel(QObject *parent):
     #ifdef USELISTMODEL
     QAbstractListModel(parent)
-    #else
+  #else
     QAbstractTableModel(parent)
-    #endif
+  #endif
 {
+    Element e("UUID","Name","Description");
+    addData(e);
 }
 
 int CustomTableModel::columnCount(const QModelIndex &parent) const{
     Q_UNUSED(parent);
-    return 3;
+    return Element::dataCount();
 }
 
 int CustomTableModel::rowCount(const QModelIndex &parent) const{
@@ -52,7 +54,6 @@ QVariant CustomTableModel::data(const QModelIndex &index, int role) const
     if (index.row() >= m_elementList.size() || index.row() < 0)
         return QVariant();
 
-
     const Element& elt = m_elementList.at(index.row());
     switch (role) {
     case UUIDRole:
@@ -61,15 +62,38 @@ QVariant CustomTableModel::data(const QModelIndex &index, int role) const
         return elt.m_name;
     case DescriptionRole:
         return elt.m_description;
-    default:
-        return QVariant();
+    case TableDataRole:
+    {
+        switch (index.column()) {
+        case 0:
+            return elt.m_uuid;
+        case 1:
+            return elt.m_name;
+        case 2:
+            return elt.m_description;
+        default:
+            break;;
+        }
+        break;
     }
+    case HeadingRole:
+    {
+        if( index.row()==0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    default:
+        break;
+    }
+
     return QVariant();
 }
 
 QString CustomTableModel::uuid(const QModelIndex &index)
 {
-    return data(index,CustomTableModelRoles::UUIDRole).value<QString>();
+    return data(index,TableDataRole).value<QString>();
 }
 
 bool CustomTableModel::setData(const QModelIndex &index, const QVariant &value,

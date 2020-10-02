@@ -79,7 +79,7 @@ Rectangle {
         height:103
         Text {
             id: titleText
-            text:  appTitle
+            text:  rootWindow.title
             font.family: "Bcom"
             //font.weight:Font.Bold
             color :"white"
@@ -429,7 +429,7 @@ Rectangle {
         height:helpCustomText_1.contentHeight
         visible: false
 
-        BComTextBlock {
+        BComPictTextBlock {
             id : helpCustomText_1
             text:  "help custom text 1 - to be defined"
             textFontFamily: "Bcom"
@@ -452,7 +452,7 @@ Rectangle {
         height:helpCustomText_2.contentHeight
         visible: false
 
-        BComTextBlock {
+        BComPictTextBlock {
             id : helpCustomText_2
             text:  "help custom text 2 - to be defined"
             textFontFamily: "Bcom"
@@ -475,7 +475,7 @@ Rectangle {
         height:helpCustomText_3.contentHeight
         visible: false
 
-        BComTextBlock {
+        BComPictTextBlock {
             id : helpCustomText_3
             text:  "help custom text 3 - to be defined"
             textFontFamily: "Bcom"

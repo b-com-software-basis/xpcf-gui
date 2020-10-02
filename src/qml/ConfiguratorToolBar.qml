@@ -13,7 +13,6 @@ Rectangle {
     BComButton {
         id:snippetButton
         enabled:true
-        bPictoBefore: false
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: parent.right
@@ -21,7 +20,7 @@ Rectangle {
         width:100
         buttonColor : "green"
         text:"Code snippet"
-        bCenterText: true
+        //bCenterText: true
         onClicked: {
             user.generateSnippet()
         }
@@ -30,7 +29,6 @@ Rectangle {
     BComButton {
         id:saveButton
         enabled:true
-        bPictoBefore: false
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: snippetButton.left
@@ -38,7 +36,7 @@ Rectangle {
         width:100
         buttonColor : "green"
         text:"Save"
-        bCenterText: true
+        //bCenterText: true
         onClicked: {
             user.save()
         }
@@ -47,7 +45,6 @@ Rectangle {
     BComButton {
         id:loadButton
         enabled:true
-        bPictoBefore: false
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: saveButton.left
@@ -55,7 +52,7 @@ Rectangle {
         width:100
         buttonColor : "blue"
         text:"Load"
-        bCenterText: true
+        //bCenterText: true
         onClicked: {
             user.load()
         }
@@ -64,7 +61,6 @@ Rectangle {
     BComButton {
         id:newButton
         enabled:true
-        bPictoBefore: false
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: loadButton.left
@@ -72,7 +68,7 @@ Rectangle {
         width:100
         buttonColor : "purple"
         text:"New"
-        bCenterText: true
+        // bCenterText: true
         onClicked: {
             user.newConfiguration()
         }

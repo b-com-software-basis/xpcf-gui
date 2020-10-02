@@ -26,7 +26,7 @@
 #include <QObject>
 #include <QUrl>
 #include <QStringListModel>
-#include <QQuickView>
+#include <QQmlApplicationEngine>
 #include <QQuickItem>
 #include "CustomTableModel.h"
 
@@ -40,15 +40,16 @@ class QMLProxy : public QObject
     Q_OBJECT
 
 public:
-    QMLProxy(CustomTableModel & componentModel, CustomTableModel & modulesModel,
+    QMLProxy(QQmlApplicationEngine * engine, CustomTableModel & componentModel, CustomTableModel & modulesModel,
              CustomTableModel & interfacesModel,CustomTableModel & appComponentModel,
-             CustomTableModel & allInterfacesModel, QStringListModel & parameterValues);
+             CustomTableModel & allInterfacesModel, CustomTableModel & parametersModel, QStringListModel & parameterValues);
     ~QMLProxy();
 
-    void setViewer(QQuickView * viewer) {m_viewer = viewer; }
+   // void setViewer(QQuickView * viewer) {m_viewer = viewer; }
 
     // Modules
     Q_INVOKABLE bool addModule(const QUrl & moduleUrl);
+    Q_INVOKABLE bool loadModules(const QUrl & folderUrl, bool bRecurse);
     Q_INVOKABLE void removeModule(const QModelIndex & idx);
     Q_INVOKABLE void getModules();
 
@@ -76,12 +77,13 @@ private:
     bool populateInterfaces(SPtr<org::bcom::xpcf::ModuleMetadata> moduleInfos);
     bool getComponentsForInterface(const QString & uuid);
     void removeComponents(SPtr<org::bcom::xpcf::ModuleMetadata> moduleInfos);
+    void registerModuleInformations(SPtr<org::bcom::xpcf::ModuleMetadata> moduleInfos);
 
 private:
     // User and service management
     // qml viewer
-    QQuickView * m_viewer;
-
+//    QQuickView * m_viewer;
+    QQmlApplicationEngine * m_engine;
     // Contact model
     CustomTableModel & m_componentModel;
     CustomTableModel & m_appComponentModel;
@@ -90,6 +92,7 @@ private:
 
     CustomTableModel & m_interfacesModel;
     CustomTableModel & m_allInterfacesModel;
+    CustomTableModel & m_parametersModel;
     QStringListModel & m_parameterValues;
     QString m_defaultDuration;
     QString m_defaultNbViews;

@@ -60,5 +60,8 @@
         <file>qml/ConfiguratorToolBar.qml</file>
         <file>qml/ParameterDialog.qml</file>
         <file>qml/images/folder_red.png</file>
+        <file>qml/Home.qml</file>
+        <file>qml/BComPictButton.qml</file>
+        <file>qml/BComPictTextBlock.qml</file>
     </qresource>
 </RCC>

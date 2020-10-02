@@ -1,24 +1,27 @@
-import QtQuick 2.3
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
+import QtQuick 2.12
+//import QtQuick.Controls 1.4
+import QtQuick.Controls 2.5
+import QtQuick.Layouts 1.12
+
+//import QtQuick.Controls.Styles 1.4
 import "BComStyles.js" as BComStyles
 import SortFilterProxyModel 0.1
 
 Rectangle {
     id: modulesRootWidget
     objectName: "modulesRootWidget"
+    //   border.width: 5
+    //  border.color: BComStyles.blue
+
     color: BComStyles.darkGrey
 
-    // Ciphered image for overlay
-    property alias pictureOverlaySource : picture.source
-
     function addModule(name,path,uuid) {
-       // moduleTableViewModel.append({name: name, path: path, uuid: uuid})
+        // moduleTableViewModel.append({name: name, path: path, uuid: uuid})
     }
 
     function removeModule(uuid) {
         // search index of current image
-      /*  for (var i= 0 ; i <moduleTableViewModel.count; i++ )
+        /*  for (var i= 0 ; i <moduleTableViewModel.count; i++ )
         {
             if (moduleTableViewModel.get(i).name === uuid)
             {
@@ -31,125 +34,17 @@ Rectangle {
 
     function updateModules()
     {
-       // moduleTableViewModel.clear();
+        // moduleTableViewModel.clear();
         user.getModules();
     }
 
     function updateHelpText4()
     {
 
-            help.text4 = "Help text 4"
-            help.text4XPart = widgetRect.x + borderRect.x + modulesTableView.x
-            help.text4YPart = widgetRect.y + borderRect.y + modulesTableView.y + 25
+        help.text4 = "Help text 4"
+        help.text4XPart = widgetRect.x + borderRect.x + modulesTableView.x
+        help.text4YPart = widgetRect.y + borderRect.y + modulesTableView.y + 25
 
-    }
-
-    BComMenuBar {
-        id: menuBar
-        productTitle: "*" + appTitle + "*"
-        currentTitle: "/ home"
-        helpEnabled: true
-        paramEnabled: true
-        closeEnabled: true
-        interfacesEnabled: true
-        componentsEnabled: true
-        configuratorEnabled: true
-        modulesEnabled: false
-    }
-
-    ////////////////////
-    // Overlay
-    ////////////////////
-    Rectangle {
-        id:overlayRect
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.leftMargin: BComStyles.rightMargin
-        anchors.rightMargin: BComStyles.rightMargin
-        anchors.top:menuBar.bottom
-        anchors.topMargin: BComStyles.rightMargin
-        anchors.bottom: parent.bottom
-        color:"black"
-        visible : false
-
-        // Close button
-        Rectangle {
-            id: closeButtonRect
-            anchors.left: parent.left
-            anchors.leftMargin: BComStyles.rightMargin
-            anchors.right: parent.right
-            anchors.top:parent.top
-            color:"black"
-            height : 60
-
-            BComButton {
-                Image {source:"images/closebuttonimage.png"
-                       anchors.centerIn: parent}
-                id:closebuttonimage
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.right : parent.right
-                anchors.rightMargin: BComStyles.rightMargin
-                width:35
-                height:35
-                buttonColor : "black"
-                bPictoBefore: false
-                bCenterText: true
-
-                onClicked: {
-                    modulesRootWidget.pictureOverlaySource = "image://imageOverlayProvider/"
-                    overlayRect.visible = false
-                    widgetRect.visible = true
-
-                    menuBar.componentsEnabled=true;
-                    menuBar.paramEnabled=true;
-                }
-
-                Component.onCompleted: {
-                    closebuttonimage.enabled = true;
-                }
-                tooltip: "close view"
-            }
-        }
-
-        Rectangle {
-            id: contentRect
-            anchors.left: parent.left
-            anchors.leftMargin: BComStyles.rightMargin
-            anchors.right: parent.right
-            anchors.rightMargin: BComStyles.rightMargin
-            anchors.top:closeButtonRect.bottom
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: BComStyles.rightMargin
-            color:"transparent"
-
-            // manage image in a rectangle - allow to scale and place correctly
-            Rectangle {
-                id: pictureRect
-                anchors.centerIn: parent
-                color : "transparent"
-                width : picture.width*picture.scale
-                height : picture.height*picture.scale
-
-                Image {
-                    id: picture
-                    anchors.centerIn: parent
-                    fillMode: Image.PreserveAspectFit
-                    cache: false // fix remove file in the ImageOverlayProvider::requestImage
-                    scale : {
-                        Math.min (contentRect.width/sourceSize.width,
-                                  contentRect.height/ sourceSize.height)
-                    }
-                    antialiasing: true
-                }
-            }
-        }
-
-        onVisibleChanged: {
-            if (visible) {
-                menuBar.componentsEnabled=false;
-                menuBar.paramEnabled=false;
-            }
-        }
     }
 
     ////////////////////
@@ -157,41 +52,39 @@ Rectangle {
     ////////////////////
     Rectangle {
         id:widgetRect
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.leftMargin: BComStyles.rightMargin
-        anchors.rightMargin: BComStyles.rightMargin
-        anchors.top:menuBar.bottom
-        anchors.topMargin:5
-        anchors.bottom: parent.bottom
+        anchors {
+            left: parent.left
+            right: parent.right
+            top:parent.top
+            bottom: parent.bottom
+        }
         color:"black"
 
-
-        ////////////////////
-        // drop for modules
-        ////////////////////
 
         BComDropComponent {
             id : dropWidget
             text : "> drop an XPCF module file to introspect here"
-            anchors.left: parent.left
-            anchors.leftMargin: BComStyles.rightMargin
-            anchors.right: parent.right
-            anchors.rightMargin: BComStyles.rightMargin
-            anchors.top: parent.top
-            anchors.topMargin: BComStyles.rightMargin
+            anchors {
+                left: parent.left
+                leftMargin: BComStyles.rightMargin
+                right: parent.right
+                rightMargin: BComStyles.rightMargin
+                top: parent.top
+                topMargin: BComStyles.rightMargin
+            }
             imagepicto : "images/folder_red.png"
             height:60
         }
 
         Rectangle {
             id: borderRect
-            anchors.left: dropWidget.left
-            anchors.right: dropWidget.right
-            anchors.top:dropWidget.bottom
-            anchors.bottom:parent.bottom
-            anchors.bottomMargin: BComStyles.rightMargin
-
+            anchors {
+                left: dropWidget.left
+                right: dropWidget.right
+                top:dropWidget.bottom
+                bottom:parent.bottom
+                bottomMargin: BComStyles.rightMargin
+            }
             color : BComStyles.black
             border.width: 1
             border.color: BComStyles.darkGrey
@@ -199,231 +92,97 @@ Rectangle {
             ////////////////////
             // modules
             ////////////////////
+            StackLayout {
+                id: modulesStack
+                anchors.fill: parent
+                TableView {
+                    id : modulesTableView
 
-            TableView {
-                id : modulesTableView
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.topMargin: BComStyles.verticalSpacing
-                anchors.bottom: parent.bottom
-                sortIndicatorVisible : true
-                model: modulesModel
-                currentRow: modulesModel.rowCount ? 0 : -1
-                rowDelegate : rowDelegateItem
-                headerDelegate: headerDelegateItem
-                backgroundVisible : false // fix white area at resize
-                focus: true
+                    property var currentUUID: 0
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignTop | Qt.AlignBottom
+                    Layout.topMargin: BComStyles.verticalSpacing
+                    /*anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.topMargin: BComStyles.verticalSpacing
+                    anchors.bottom: parent.bottom*/
 
-                Component.onCompleted: {
-                    updateModules();
-                }
+                    //sortIndicatorVisible : true
+                    model: modulesModel
+                    // currentRow: modulesModel.rowCount ? 0 : -1
+                    // rowDelegate : rowDelegateItem
+                    // headerDelegate: headerDelegateItem
 
-                // Style
-                /*style: TableViewStyle {
-                    frame: Rectangle {
-                        border.color: BComStyles.darkGrey
-                        color: BComStyles.black
-                    }
-                }*/
-
-                // Columns Defintion
-                TableViewColumn {
-                    role: 'name'
-                    title: "name"
+                    focus: true
                     delegate: textDelegate
+
                     Component.onCompleted: {
-                        width = modulesTableView.width/3;
+                        updateModules();
                     }
-                    onWidthChanged:
-                    {   // manage minimum width
-                        if (width < 150) {
-                            width = 150;
-                        }
-                    }
-                }
-                TableViewColumn {
-                    role: "description"
-                    title: "path"
-                    delegate: textDelegate
-                    Component.onCompleted: {
-                        width = modulesTableView.width/3;
-                    }
-                    onWidthChanged: {
-                        // manage minimum width
-                        if (width < 100) {
-                            width = 100;
-                        }
-                    }
-                }
-                TableViewColumn {
-                    role: "uuid"
-                    title: "UUID"
-                    delegate: textDelegate
-                    Component.onCompleted: {
-                        width = modulesTableView.width/3;
-                    }
-                    onWidthChanged: {
-                        // manage minimum width
-                        if (width < 100) {
-                            width = 100;
-                        }
-                    }
-                }
-
-                TableViewColumn {
-                    role: "name"
-                    title: ""
-                    delegate: removeModuleDelegate
-                    Component.onCompleted: {
-                        width = 0;
-                    }
-                    onWidthChanged: {
-                        // manage minimum width
-                        if (width < 50) {
-                            width = 50;
-                        }
-                    }
-                }
-                // Sort
-//                model: SortFilterProxyModel {
-//                        id: proxyModel
-//                        source: modulesModel.count > 0 ? modulesModel : null
-//                   //     sortOrder: modulesModel.sortIndicatorOrder
-//                        sortCaseSensitivity: Qt.CaseInsensitive
-//                        sortRole: {
-//                            // manage sort of last column (remove 'image') with data of first column
-//                            var sortIndicatorColumn = modulesTableView.sortIndicatorColumn;
-//                            if (modulesModel.sortIndicatorColumn === modulesModel.columnCount-1) {
-//                                sortIndicatorColumn = 0;
-//                            }
-//                            modulesModel.count > 0 ? modulesModel.getColumn(sortIndicatorColumn).role : ""
-//                        }
-//                }
-
-                // Delegate - text items
-                Component {
-                    id: textDelegate
-                    Rectangle {
-                        color: "transparent"
-                        BComTextStyle3
-                        {
-                            anchors.fill: parent
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignHCenter
-                            anchors.leftMargin: BComStyles.verticalSpacing
-                            text: styleData.value.toLocaleString(Qt.locale(),("yyyy-MM-dd"))
-                            elide: Text.ElideRight
-                            color: "white"
-                        }
-                    }
-                }
-
-                // Delegate - text items
-                Component {
-                    id: removeModuleDelegate
-                    Rectangle {
-                        color: "transparent"
-
-                        BComButton {
-                            Image {source:"images/trashpicto.png"
-                                   anchors.centerIn: parent
-                                   scale:  0.45}
-                            id:removeModuleButton
-                            anchors.centerIn: parent
-                            buttonColor : "black"
-                            bPictoBefore: false
-                            bCenterText: true
-                            width: 35
-                            onClicked:  {
-                                user.removeModule(modulesModel.index(modulesTableView.currentIndex,0));
-                            }
-
-                            Component.onCompleted: {
-                                removeModuleButton.enabled = true;
-                            }
-                            tooltip: "delete module from list"
-                        }
-                    }
-                }
-
-                // Delegate - row height
-                Component {
-                    id: rowDelegateItem
-                    Rectangle
-                    {
-                        height: 50
-                        color: "black"
-                    }
-                }
-
-                // Delegate - header
-                Component {
-                    id: headerDelegateItem
-                    Rectangle {
-                        height: textItem.implicitHeight * 1.5
-                        width: textItem.implicitWidth
-                        color: BComStyles.darkGrey
-                        BComTextStyle3 {
-                            id: textItem
-                            anchors.fill: parent
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignHCenter
-                            anchors.leftMargin: 12
-                            text: styleData.value
-                            elide: Text.ElideRight
-                            color: BComStyles.white
-                            font.weight: Font.Light
-                        }
-
+                    // Delegate - text items
+                    Component {
+                        id: textDelegate
                         Rectangle {
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            anchors.bottom: parent.bottom
-                            anchors.bottomMargin: 1
-                            anchors.topMargin: 1
-                            width: 1
-                            color: "#ccc"
+                            color: "transparent"
+                            implicitWidth: 250
+                            implicitHeight: 50
+                            BComTextStyle3
+                            {
+                                id: rowText
+                                anchors.fill: parent
+                                verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
+                                anchors.leftMargin: BComStyles.verticalSpacing
+                                text: tabledata
+                                elide: Text.ElideRight
+                                color: "white"
+                            }
+                            MouseArea {
+                                id: mouseRegion
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onClicked: {
+                                    if (mouse.button & Qt.RightButton) {
+                                        console.log( "Clicked" + rowText.text + modulesModel.uuid(modulesModel.index(row,0)))
+                                        modulesTableView.currentUUID = modulesModel.uuid(modulesModel.index(row,0))
+                                        modulesStack.currentIndex = 1
+                                    }
+                                }
+                            }
                         }
+                    }
+                }
+                Frame {
+                    id: moduleFrame
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignTop | Qt.AlignBottom
+                    Layout.topMargin: BComStyles.verticalSpacing
 
-                        Image {
-                            id: name
-                            source: {
-                                if (modulesTableView.sortIndicatorOrder === Qt.AscendingOrder) {
-                                    "images/chevrondown.png"
-                                }
-                                else {
-                                    "images/chevronup.png"
-                                }
-                            }
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.top: parent.top
-                            visible: {
-                                styleData.column===modulesTableView.sortIndicatorColumn ? true: false
-                            }
+                    BComButton {
+                        id:closeFrameButton
+                        anchors.right: parent.right
+                        height: 40
+                        enabled:true
+                        width:90
+                        buttonColor : "blue"
+                        text:"Close"
+                        onClicked: {
+                            modulesStack.currentIndex = 0
                         }
+                        tooltip: "select and display modules"
+                    }
+                    Text {
+                        text: modulesTableView.currentUUID
+                        color: BComStyles.white
                     }
                 }
             }
-
-            // modulesTableView model
-//            ListModel {
-//                //id: moduleTableViewModel
-//                id: modulesModel
-//                onCountChanged: {
-//                    console.log("inserted - index : " + currentIndex + " ; component : " + currentItem.name)
-
-//                }
-//onDataChanged: {
-//    console.log("inserted - index : " + currentIndex + " ; component : " + currentItem.name)
-//}
-//                onRowsInserted:
-//                {
-//                    console.log("inserted - index : " + currentIndex + " ; component : " + currentItem.name)
-//                }
-//            }
         }
     }
+
+
 
     Help {
         id:help
@@ -449,7 +208,7 @@ Rectangle {
     }
 
     Component.onCompleted: {
-        modulesTableView.visible = rootWidget.displayModules;
+        //modulesTableView.visible = rootWidget.displayModules;
         updateHelpText4();
     }
 }
