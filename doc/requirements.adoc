@@ -1,0 +1,23 @@
+= XPCF user interface requirements
+
+== Expected features :
+- xpcf based application configuration management
+    - provide a "configurator" tab with New and Load /save buttons to load/save an existing configuration
+    - provide the ability to choose a module
+    - provide a component list area and a sub-area describing the selected component (name, descrption, interfaces, sample code)
+    - provide a "component repository" area
+    - provide a mean to manage named component configuration -> the name could be edited in a parameter area
+    
+- "interface view" tab to display loaded components through interfaces
+    - provide a list of interfaces to choose from
+    - once an interface is selected, the view area displays the components that implement this interface, the module in which they are located, the component other interfaces avaible and the component parameters
+
+
+Configurator : 
+- treeview view. Provide a declarative description of the interfaces glossary to categorise the list based on interfaces
+
+Module view:
+- provide a button to generate the module registry from the module loaded when it doesn't exist in the registry path. The registry default path is set in the parameters tab
+	
+	
+Note : a module name is the target name without its "decorations" (without any prefix or suffixe i.e. without lib*.[dll|dylib|so])	
