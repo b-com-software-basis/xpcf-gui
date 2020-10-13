@@ -5,7 +5,7 @@ import "BComStyles.js" as BComStyles
 Button {
     id: root
 
-    property alias styledText : bgr.text
+    property alias buttonText : bgr.text
     property alias tooltip : buttonTooltip.text
     property alias imagepicto : bgr.source
     property alias bCenterText : bgr.bCenterText
@@ -119,13 +119,13 @@ Button {
         id: mainRect
         anchors.fill: parent
         BComPictTextBlock {
-        id: bgr
-        anchors.top: parent.top
-        anchors.bottom: indicatorRect.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        color: "black"
-        opacity: root.pressed ? 72 : 100
+            id: bgr
+            anchors.top: parent.top
+            anchors.bottom: indicatorRect.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            color: "black"
+            opacity: root.pressed ? 72 : 100
         }
         Rectangle {
             id: indicatorRect

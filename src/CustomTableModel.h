@@ -81,7 +81,7 @@ Q_OBJECT
 Q_ENUMS(CustomTableModelRoles)
 
 public:
-    enum CustomTableModelRoles{
+    enum CustomTableModelRoles {
         TableDataRole = Qt::UserRole + 1,
         HeadingRole,
         UUIDRole,

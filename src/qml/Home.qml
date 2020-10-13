@@ -10,10 +10,9 @@ import SortFilterProxyModel 0.1
 Rectangle {
     id: homeRootWidget
     objectName: "modulesRootWidget"
-    //   border.width: 5
-    //  border.color: BComStyles.blue
-
     color: BComStyles.darkGrey
+
+    property bool displayHelp
 
     function addModule(name,path,uuid) {
         // moduleTableViewModel.append({name: name, path: path, uuid: uuid})
@@ -38,65 +37,81 @@ Rectangle {
         user.getModules();
     }
 
-    ////////////////////
-    // drop and module list
-    ////////////////////
-    Rectangle {
-        id:widgetRect
-        anchors {
-            left: parent.left
-            right: parent.right
-            top:parent.top
-            bottom: parent.bottom
-        }
-        color:"black"
+    ColumnLayout {
+        anchors.fill: parent
+        Layout.fillWidth: true
+        spacing: 0
 
-
-        BComDropComponent {
-            id : dropWidget
-            text : "> drop an XPCF module file to introspect here"
-            anchors {
-                left: parent.left
-                leftMargin: BComStyles.rightMargin
-                right: parent.right
-                rightMargin: BComStyles.rightMargin
-                top: parent.top
-                topMargin: BComStyles.rightMargin
-            }
-            imagepicto : "images/folder_red.png"
-            height:60
+        Rectangle {
+            id: titleRect
+            color:BComStyles.darkGrey
+            height: 48
         }
 
-        FileDialog {
-            id: fileDialog
-            title: "Please choose a folder to load XPCF modules from"
-            folder: shortcuts.home
-            selectFolder: true
-            sidebarVisible: true
-            onAccepted: {
-                console.log("You chose: " + fileDialog.fileUrls)
-            }
-            onRejected: {
-                console.log("Canceled")
-            }
-        }
+        ////////////////////
+        // drop and module list
+        ////////////////////
+        Rectangle {
+            id:widgetRect
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color:"black"
 
-        BComButton {
-            id:loadModulesButton
-            enabled:true
-            height: 40
-            width:110
-            buttonColor : "blue"
-            text:"Load modules from folder"
-            onClicked: {
-                fileDialog.visible = true
+            BComDropComponent {
+                id : dropWidget
+                text : "> drop an XPCF module file to introspect here"
+                anchors {
+                    left: parent.left
+                    leftMargin: BComStyles.rightMargin
+                    right: parent.right
+                    rightMargin: BComStyles.rightMargin
+                    top: parent.top
+                    topMargin: BComStyles.rightMargin
+                }
+                imagepicto : "images/folder_red.png"
+                height:60
+            }
+
+
+            FileDialog {
+                id: fileDialog
+                title: "Please choose a folder to load XPCF modules from"
+                folder: shortcuts.home
+                selectFolder: true
+                sidebarVisible: true
+                onAccepted: {
+                    console.log("You chose: " + fileDialog.fileUrls)
+                    user.loadModules(fileDialog.fileUrls,true)
+                }
+                onRejected: {
+                    console.log("Canceled")
+                }
+            }
+
+            BComButton {
+                id:loadModulesButton
+                enabled:true
+                anchors {
+                    left: parent.left
+                    leftMargin: BComStyles.rightMargin
+                    top: dropWidget.bottom
+                    topMargin: BComStyles.rightMargin
+                }
+                height: 40
+                width:300
+                buttonColor : "blue"
+                text:"Load modules from folder"
+                onClicked: {
+                    fileDialog.visible = true
+                }
+                tooltip: "Load modules from folder"
             }
         }
     }
 
     Help {
         id:help
-        visible:false;
+        visible:displayHelp
         bHelp1Visible : true
         bHelp3Visible : true
         text1 : "Drop an XPCF module to introspect it"

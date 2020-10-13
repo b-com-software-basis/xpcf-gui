@@ -149,6 +149,7 @@ Button {
 
     ToolTip {
         id: buttonTooltip
-        visible: down
+        visible: text.length != 0 && hovered
+        delay: Qt.styleHints.mousePressAndHoldInterval
     }
 }

@@ -10,7 +10,7 @@ Rectangle {
     x:0 ; y:0
     width:parent.width
     height:parent.height
-    visible:true
+    visible : true
     color:"black"
 
     // internal properties
