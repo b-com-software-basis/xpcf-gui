@@ -35,6 +35,7 @@ ApplicationWindow {
             Components {}
             Interfaces {}
             Configurator {}
+            Parameters {}
         }
     }
 }

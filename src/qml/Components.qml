@@ -117,16 +117,15 @@ Rectangle {
                 color:"transparent"
                 height : 60
 
-                BComButton {
+                BComButton2 {
+                    id:refreshButton
+                    buttonColor: "black"
                     Image {source:"images/refreshbuttonimage.png"
                         anchors.centerIn: parent}
-                    id:refreshButton
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.right : parent.right
                     width:35
                     height:35
-                    buttonColor : "black"
-
                     onClicked: {
                         updateComponentInfos(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
                     }
@@ -317,15 +316,15 @@ Rectangle {
                 width: saveStructureButton.width
                 color:"black"
 
-                BComButton {
+                BComButton2 {
                     id:saveStructureButton
+                    buttonColor: "grey"
                     anchors.verticalCenter: parent.verticalCenter
                     enabled: false
                     width : 300
                     height : 40
-                    buttonColor: "green"
-                    BComTextStyle3 {text:"Save module structure information"
-                        anchors.centerIn: parent}
+                    anchors.centerIn: parent
+                    text:"Save module structure information"
                     onClicked: {
                         enabled  = false;
                         // Applys settings values
@@ -439,15 +438,15 @@ Rectangle {
                 anchors.bottomMargin: BComStyles.rightMargin
                 color:"black"
 
-                BComButton {
+                BComButton2 {
                     id:saveParamsButton
+                    buttonColor: "grey"
                     anchors.verticalCenter: parent.verticalCenter
                     enabled: false
                     width : 300
                     height : 40
-                    buttonColor: "green"
-                    BComTextStyle3 {text:"Save parameters information"
-                        anchors.centerIn: parent}
+                    anchors.centerIn: parent
+                    text:"Save parameters information"
                     onClicked: {
                         enabled  = false;
                         // Applys settings values

@@ -7,68 +7,65 @@ Rectangle {
     anchors.top: parent.top
     anchors.left: parent.left
     anchors.right: parent.right
-
-    color:"transparent"
     height:40
-    BComButton {
+    color:"transparent"
+
+    BComButton2 {
         id:snippetButton
-        enabled:true
+        enabled: true
+        buttonColor: "grey"
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: parent.right
         anchors.rightMargin: 2
-        width:100
-        buttonColor : "green"
+        width : 150
         text:"Code snippet"
-        //bCenterText: true
         onClicked: {
             user.generateSnippet()
         }
         tooltip: "Code snippet"
     }
-    BComButton {
+
+    BComButton2 {
         id:saveButton
         enabled:true
+        buttonColor : "grey"
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: snippetButton.left
         anchors.rightMargin: 2
         width:100
-        buttonColor : "green"
         text:"Save"
-        //bCenterText: true
         onClicked: {
             user.save()
         }
         tooltip: "Save configuration"
     }
-    BComButton {
+    BComButton2 {
         id:loadButton
         enabled:true
+        buttonColor : "grey"
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: saveButton.left
         anchors.rightMargin: 2
         width:100
-        buttonColor : "blue"
         text:"Load"
-        //bCenterText: true
         onClicked: {
             user.load()
         }
         tooltip: "Load existing configuration"
     }
-    BComButton {
+    BComButton2 {
         id:newButton
         enabled:true
+        buttonColor : "grey"
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: loadButton.left
         anchors.rightMargin: 2
         width:100
-        buttonColor : "purple"
         text:"New"
-        // bCenterText: true
         onClicked: {
             user.newConfiguration()
         }

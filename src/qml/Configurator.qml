@@ -97,65 +97,51 @@ Rectangle {
                 text: "components:"
             }
 
-            ConfiguratorToolBar {
-                id: configuratorToolBar
-                anchors.top: parent.top
-                anchors.topMargin: BComStyles.rightMargin
-                anchors.right: buttonBarRect.left
-                anchors.rightMargin: BComStyles.rightMargin
-                visible: true
-            }
-
-            BComButton {
+            BComButton2 {
                 id:pickButton
                 enabled:true
-                anchors.bottom: componentListRect.top
-                anchors.bottomMargin: 10
+                anchors.top: configuratorToolBar.top
                 anchors.left: componentListRect.right
                 anchors.leftMargin: -40
                 width:130
-                buttonColor : "blue"
+                buttonColor : "grey"
                 text:"-- pick ->"
                 onClicked: {
+                    // SLETODO : disabled if empty!
                     user.pickComponent(modulesModel.uuid(modulesModel.index(modulesCombobox.currentIndex,0)),componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
                 }
                 tooltip: "pick a component"
             }
 
-            // buttons refresh/close
-            Rectangle {
-                id: buttonBarRect
-                //            anchors.left: parent.left
-                //            anchors.leftMargin: BComStyles.rightMargin
-                anchors.right: parent.right
+            ConfiguratorToolBar {
+                id: configuratorToolBar
+                anchors.top: parent.top
+                anchors.topMargin: BComStyles.rightMargin
+                anchors.right: refreshButton.left
                 anchors.rightMargin: BComStyles.rightMargin
-                anchors.top:parent.top
-                width: refreshButton.width
-                color:"transparent"
-                height : 60
-
-                BComButton {
-                    Image {source:"images/refreshbuttonimage.png"
-                        anchors.centerIn: parent}
-                    id:refreshButton
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right : parent.right
-                    width:35
-                    height:35
-                    buttonColor : "black"
-                    //     bCenterText: true
-
-                    onClicked: {
-                        updateComponentInfos(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
-                    }
-
-                    Component.onCompleted: {
-                        refreshButton.enabled = true;
-                    }
-                    tooltip: "refresh informations"
-                }
+                visible: true
             }
 
+            BComButton2 {
+                Image {source:"images/refreshbuttonimage.png"
+                    anchors.centerIn: parent}
+                id:refreshButton
+                anchors.top:configuratorToolBar.top
+                anchors.topMargin: 2
+                anchors.right: parent.right
+                anchors.rightMargin: BComStyles.rightMargin
+                width:35
+                height:35
+                buttonColor : "black"
+                onClicked: {
+                    updateComponentInfos(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
+                }
+
+                Component.onCompleted: {
+                    refreshButton.enabled = true;
+                }
+                tooltip: "refresh informations"
+            }
 
             Rectangle {
                 id: componentListRect

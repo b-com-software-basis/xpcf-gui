@@ -12,7 +12,6 @@ Button {
     property color hoverBgColor: BComStyles.medBlue
     property color clickedBgColor: BComStyles.darkBlue
     property color textColor: BComStyles.white
-    property color textColorSelected: BComStyles.blue
     property bool bStateButton : false
     checked : false
     enabled : false
@@ -129,12 +128,14 @@ Button {
         anchors.fill: rootButton
         implicitHeight: 40
         Rectangle {
-        id: mainRect
-        anchors.top: bgr.top
-        anchors.bottom: indicatorRect.top
-        border.width: 4
-        border.color: BComStyles.green
-        color: BComStyles.black
+            id: mainRect
+            anchors.top: bgr.top
+            anchors.left: bgr.left
+            anchors.right: bgr.right
+            anchors.bottom: indicatorRect.top
+            //border.width: 4
+            //border.color: BComStyles.green
+            color: BComStyles.black
         }
         Rectangle {
             id: indicatorRect

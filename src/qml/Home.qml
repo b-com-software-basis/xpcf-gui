@@ -88,8 +88,9 @@ Rectangle {
                 }
             }
 
-            BComButton {
+            BComButton2 {
                 id:loadModulesButton
+                buttonColor: "grey"
                 enabled:true
                 anchors {
                     left: parent.left
@@ -99,7 +100,6 @@ Rectangle {
                 }
                 height: 40
                 width:300
-                buttonColor : "blue"
                 text:"Load modules from folder"
                 onClicked: {
                     fileDialog.visible = true

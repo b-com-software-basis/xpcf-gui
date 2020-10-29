@@ -63,5 +63,6 @@
         <file>qml/Home.qml</file>
         <file>qml/BComPictButton.qml</file>
         <file>qml/BComPictTextBlock.qml</file>
+        <file>qml/BComButton2.qml</file>
     </qresource>
 </RCC>

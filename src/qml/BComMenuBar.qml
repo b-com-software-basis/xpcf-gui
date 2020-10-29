@@ -13,7 +13,7 @@ Rectangle {
     property alias productTitle : producttext.text
     property int currentIndex
     property bool displayHelp
-    property BComButton previousButton
+    property var previousButton
 
 
     function toggleSelected(button,index) {
@@ -229,7 +229,6 @@ Rectangle {
                 imagepicto: "images/parameterspictoenabled.png"
                 onClicked: {
                     toggleSelected(paramButton,5)
-
                 }
             }
             BComPictButton {
