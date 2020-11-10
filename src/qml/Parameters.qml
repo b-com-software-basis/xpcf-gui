@@ -194,25 +194,25 @@ Rectangle {
             bHelp4Visible : true
             text1 : "Select the path for REMAKENROOT replacement"
             text2 : "Select the path for default xpcf registry location"
-            text1XPart : defaultVisbilityText.x + defaultVisbilityText.width + parametersWidgetRect.x
-            text1YPart : defaultVisbilityText.y + parametersWidgetRect.y - 10
-            text2XPart : defaultNbViewsText.x + defaultNbViewsText.width + parametersWidgetRect.x
-            text2YPart : defaultNbViewsText.y + parametersWidgetRect.y
+            text1XPart : remakenrootText.x + remakenrootText.width + contentRect.x
+            text1YPart : remakenrootText.y + contentRect.y - 10
+            text2XPart : xpcfRegistryDefaultPathText.x + xpcfRegistryDefaultPathText.width + contentRect.x
+            text2YPart : xpcfRegistryDefaultPathText.y + contentRect.y
 
             bHelpCustom1Visible : true
             textCustom1: "display\nmodules\nlist"
             textCustom1XPart: parent.width-630
-            textCustom1YPart: menuBar.height -20
+            textCustom1YPart: -20
 
             bHelpCustom2Visible : true
             textCustom2: "display\ncomponents"
             textCustom2XPart: parent.width-510
-            textCustom2YPart: menuBar.height -20
+            textCustom2YPart: -20
 
             bHelpCustom3Visible : true
             textCustom3: "define\ndefault\nparameters"
             textCustom3XPart: parent.width-285
-            textCustom3YPart: menuBar.height -20
+            textCustom3YPart: -20
         }
 
         Component.onCompleted:

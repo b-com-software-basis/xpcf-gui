@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.12
+import Qt.labs.qmlmodels 1.0
 import "BComStyles.js" as BComStyles
 import SortFilterProxyModel 0.1
 
@@ -92,33 +93,67 @@ Rectangle {
                 border.width: 1
                 border.color: BComStyles.darkGrey
 
-                ////////////////////
-                // modules
-                ////////////////////
-                StackLayout {
-                    id: modulesStack
+                Rectangle {
+                    id: tableviewBorderRect
                     anchors.fill: parent
+                    anchors.topMargin: BComStyles.verticalSpacing
+                    color : "transparent"
+                    border.width: 1
+                    border.color: BComStyles.grey
+
+                    ////////////////////
+                    // modules
+                    ////////////////////
                     TableView {
                         id : modulesTableView
-
                         property var currentUUID: 0
-                        Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignTop | Qt.AlignBottom
-                        Layout.topMargin: BComStyles.verticalSpacing
-                        /*anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                        anchors.topMargin: BComStyles.verticalSpacing
-                        anchors.bottom: parent.bottom*/
-
+                        anchors.fill: parent
+                        anchors.leftMargin: 1
+                        anchors.topMargin: 1
+                        topMargin: columnsHeader.implicitHeight
                         //sortIndicatorVisible : true
                         model: modulesModel
                         // currentRow: modulesModel.rowCount ? 0 : -1
                         // rowDelegate : rowDelegateItem
                         // headerDelegate: headerDelegateItem
-
+                        // backgroundVisible : false // fix white area at resize
                         focus: true
                         delegate: textDelegate
+
+                        Row {
+                            id: columnsHeader
+                            y: modulesTableView.contentY
+                            //z: 2
+                            Repeater {
+                                model: modulesTableView.columns > 0 ? modulesTableView.columns : 1
+                                Rectangle {
+                                    height: 25
+                                    width: modulesTableView.width / 3 // modulesModel.columnCount
+                                    color: BComStyles.darkGrey
+                                    BComTextStyle3 {
+                                        id: textItem
+                                        anchors.fill: parent
+                                        verticalAlignment: Text.AlignVCenter
+                                        horizontalAlignment: Text.AlignHCenter
+                                        anchors.leftMargin: 12
+                                        text: modulesModel.headerData(modelData, Qt.Horizontal)
+                                        elide: Text.ElideRight
+                                        color: BComStyles.white
+                                        font.weight: Font.Light
+                                    }
+
+                                    Rectangle {
+                                        anchors.right: parent.right
+                                        anchors.top: parent.top
+                                        anchors.bottom: parent.bottom
+                                        anchors.bottomMargin: 1
+                                        anchors.topMargin: 1
+                                        width: 1
+                                        color: "#ccc"
+                                    }
+                                }
+                            }
+                        }
 
                         Component.onCompleted: {
                             updateModules();
@@ -128,7 +163,7 @@ Rectangle {
                             id: textDelegate
                             Rectangle {
                                 color: "transparent"
-                                implicitWidth: 250
+                                implicitWidth: modulesTableView.width / 3
                                 implicitHeight: 50
                                 BComTextStyle3
                                 {
@@ -155,30 +190,6 @@ Rectangle {
                                     }
                                 }
                             }
-                        }
-                    }
-                    Frame {
-                        id: moduleFrame
-                        Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignTop | Qt.AlignBottom
-                        Layout.topMargin: BComStyles.verticalSpacing
-
-                        BComButton {
-                            id:closeFrameButton
-                            anchors.right: parent.right
-                            height: 40
-                            enabled:true
-                            width:90
-                            buttonColor : "blue"
-                            text:"Close"
-                            onClicked: {
-                                modulesStack.currentIndex = 0
-                            }
-                            tooltip: "select and display modules"
-                        }
-                        Text {
-                            text: modulesTableView.currentUUID
-                            color: BComStyles.white
                         }
                     }
                 }

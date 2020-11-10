@@ -7,13 +7,16 @@ CustomTableModel::CustomTableModel(QObject *parent):
     QAbstractTableModel(parent)
   #endif
 {
-    Element e("UUID","Name","Description");
-    addData(e);
+    //Element e("UUID","Name","Description");
+    //addData(e);
 }
 
 int CustomTableModel::columnCount(const QModelIndex &parent) const{
     Q_UNUSED(parent);
-    return Element::dataCount();
+    if (parent.isValid())
+        return 0;
+    //return Element::dataCount();
+    return 3;
 }
 
 int CustomTableModel::rowCount(const QModelIndex &parent) const{

@@ -50,7 +50,7 @@ Rectangle {
                 anchors.left: interfacesComboboxLabel.right
                 anchors.leftMargin: 300
                 visible:true
-                editable: true
+                //editable: true
                 width: 250
                 height:30
                 model: allInterfacesModel
@@ -70,6 +70,16 @@ Rectangle {
                     }
                 }
                 Component.onCompleted: {
+                    user.getModules();
+                    user.getComponentsForInterface(allInterfacesModel.index(interfacesCombobox.currentIndex,0))
+                    completed = true
+                }
+
+                onCountChanged:
+                {
+                    if (count == 0) {
+                        interfacesCombobox.currentIndex = 0;
+                    }
                     user.getModules();
                     user.getComponentsForInterface(allInterfacesModel.index(interfacesCombobox.currentIndex,0))
                     completed = true
@@ -229,19 +239,9 @@ Rectangle {
                 textFontSize: 20
             }
 
-
-            TableView {
-                id : componentInfosTableView
-                property bool completed: false // added this property bool in order to sort only when compoent if completely loaded
-                property var currentUUID: 0
-                columnWidthProvider: function (column) { return 200 }
-                rowHeightProvider: function (row) { return 50 }
+            Rectangle {
+                id: componentInfosTableViewBorderRect
                 height: 250
-                /*Layout {
-                fillWidth: true
-                alignment: Qt.AlignTop | Qt.AlignBottom
-                topMargin: BComStyles.verticalSpacing
-            }*/
                 anchors {
                     left: componentListRect.right
                     leftMargin: BComStyles.rightMargin
@@ -250,47 +250,98 @@ Rectangle {
                     top: interfacesLabel.bottom
                     topMargin: BComStyles.rightMargin
                 }
+                color : "transparent"
+                border.width: 1
+                border.color: BComStyles.grey
 
-                model: interfacesModel
-                focus: true
-                delegate: textDelegate
-                Component.onCompleted: {
-                    completed = true
-                    if (interfacesCombobox.completed) {
-                        updateComponentInfos(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
-                    }
-                }
-                // Delegate - text items
-                Component {
-                    id: textDelegate
-                    Rectangle {
-                        color: "transparent"
-                        implicitWidth: 250
-                        implicitHeight: 50
-                        BComTextStyle3
-                        {
-                            id: rowText
-                            anchors {
-                                fill: parent
-                                leftMargin: BComStyles.verticalSpacing
-                            }
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignHCenter
 
-                            text: tabledata
-                            elide: Text.ElideRight
-                            color: "white"
+                TableView {
+                    id : componentInfosTableView
+                    property bool completed: false // added this property bool in order to sort only when compoent if completely loaded
+                    property var currentUUID: 0
+                    columnWidthProvider: function (column) { return 200 }
+                    rowHeightProvider: function (row) { return 50 }
+                    anchors.fill: parent
+                    anchors.leftMargin: 1
+                    anchors.topMargin: 1
+                    topMargin: columnsHeader.implicitHeight
+                    model: interfacesModel
+                    focus: true
+                    delegate: textDelegate
+                    Component.onCompleted: {
+                        completed = true
+                        if (interfacesCombobox.completed) {
+                            updateComponentInfos(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
                         }
-                        MouseArea {
-                            id: mouseRegion
-                            acceptedButtons: Qt.LeftButton | Qt.RightButton
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            onClicked: {
-                                if (mouse.button & Qt.RightButton) {
-                                    console.log( "Clicked" + rowText.text + modulesModel.uuid(modulesModel.index(row,0)))
-                                    modulesTableView.currentUUID = modulesModel.uuid(modulesModel.index(row,0))
-                                    modulesStack.currentIndex = 1
+                    }
+
+                    Row {
+                        id: columnsHeader
+                        y: componentInfosTableView.contentY
+                        //z: 2
+                        Repeater {
+                            model: componentInfosTableView.columns > 0 ? componentInfosTableView.columns : 1
+                            Rectangle {
+                                height: 25
+                                width: componentInfosTableView.width / 3 // interfacesModel.columnCount
+                                color: BComStyles.darkGrey
+                                BComTextStyle3 {
+                                    id: textItem
+                                    anchors.fill: parent
+                                    verticalAlignment: Text.AlignVCenter
+                                    horizontalAlignment: Text.AlignHCenter
+                                    anchors.leftMargin: 12
+                                    text: interfacesModel.headerData(modelData, Qt.Horizontal)
+                                    elide: Text.ElideRight
+                                    color: BComStyles.white
+                                    font.weight: Font.Light
+                                }
+
+                                Rectangle {
+                                    anchors.right: parent.right
+                                    anchors.top: parent.top
+                                    anchors.bottom: parent.bottom
+                                    anchors.bottomMargin: 1
+                                    anchors.topMargin: 1
+                                    width: 1
+                                    color: "#ccc"
+                                }
+                            }
+                        }
+                    }
+
+                    // Delegate - text items
+                    Component {
+                        id: textDelegate
+                        Rectangle {
+                            color: "transparent"
+                            implicitWidth: 250
+                            implicitHeight: 50
+                            BComTextStyle3
+                            {
+                                id: rowText
+                                anchors {
+                                    fill: parent
+                                    leftMargin: BComStyles.verticalSpacing
+                                }
+                                verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
+
+                                text: tabledata
+                                elide: Text.ElideRight
+                                color: "white"
+                            }
+                            MouseArea {
+                                id: mouseRegion
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onClicked: {
+                                    if (mouse.button & Qt.RightButton) {
+                                        console.log( "Clicked" + rowText.text + modulesModel.uuid(modulesModel.index(row,0)))
+                                        modulesTableView.currentUUID = modulesModel.uuid(modulesModel.index(row,0))
+                                        modulesStack.currentIndex = 1
+                                    }
                                 }
                             }
                         }
@@ -303,7 +354,7 @@ Rectangle {
                 anchors {
                     right: parent.right
                     rightMargin: BComStyles.rightMargin
-                    top:componentInfosTableView.bottom
+                    top:componentInfosTableViewBorderRect.bottom
                     topMargin: BComStyles.rightMargin
                 }
                 width: saveStructureButton.width
@@ -359,19 +410,9 @@ Rectangle {
                 textFontSize: 20
             }
 
-
-            TableView {
-                id : paramsTableView
-                property bool completed: false // added this property bool in order to sort only when compoent if completely loaded
-                property var currentUUID: 0
-                columnWidthProvider: function (column) { return 200 }
-                rowHeightProvider: function (row) { return 50 }
+            Rectangle {
+                id: paramsTableViewBorderRect
                 height: 250
-                /*Layout {
-                fillWidth: true
-                alignment: Qt.AlignTop | Qt.AlignBottom
-                topMargin: BComStyles.verticalSpacing
-            }*/
                 anchors {
                     left: componentListRect.right
                     leftMargin: BComStyles.rightMargin
@@ -382,51 +423,102 @@ Rectangle {
                     bottom: saveParamsButtonRect.top
                     bottomMargin: BComStyles.rightMargin
                 }
-                focus: true
-                delegate: paramsTextDelegate
-                Component.onCompleted: {
-                    completed = true
-                    if (interfacesCombobox.completed) {
-                        updateComponentParams(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
-                    }
-                }
-                // Delegate - text items
-                Component {
-                    id: paramsTextDelegate
-                    Rectangle {
-                        color: "transparent"
-                        implicitWidth: 250
-                        implicitHeight: 50
-                        BComTextStyle3
-                        {
-                            id: rowText
-                            anchors {
-                                fill: parent
-                                leftMargin: BComStyles.verticalSpacing
-                            }
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignHCenter
-                            text: tabledata
-                            elide: Text.ElideRight
-                            color: "white"
+                color : "transparent"
+                border.width: 1
+                border.color: BComStyles.grey
+
+                TableView {
+                    id : paramsTableView
+                    property bool completed: false // added this property bool in order to sort only when compoent if completely loaded
+                    property var currentUUID: 0
+                    columnWidthProvider: function (column) { return 200 }
+                    rowHeightProvider: function (row) { return 50 }
+                    anchors.fill: parent
+                    anchors.leftMargin: 1
+                    anchors.topMargin: 1
+                    topMargin: paramscolumnsHeader.implicitHeight
+                    focus: true
+                    model: parametersModel
+                    delegate: paramsTextDelegate
+
+                    Component.onCompleted: {
+                        completed = true
+                        if (interfacesCombobox.completed) {
+                            updateComponentParams(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
                         }
-                        MouseArea {
-                            id: mouseRegion
-                            acceptedButtons: Qt.LeftButton | Qt.RightButton
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            onClicked: {
-                                if (mouse.button & Qt.RightButton) {
-                                    console.log( "Clicked" + rowText.text + modulesModel.uuid(modulesModel.index(row,0)))
-                                    modulesTableView.currentUUID = modulesModel.uuid(modulesModel.index(row,0))
-                                    modulesStack.currentIndex = 1
+                    }
+
+                    Row {
+                        id: paramscolumnsHeader
+                        y: paramsTableView.contentY
+                        //z: 2
+                        Repeater {
+                            model: paramsTableView.columns > 0 ? paramsTableView.columns : 1
+                            Rectangle {
+                                height: 25
+                                width: paramsTableView.width / 3 // interfacesModel.columnCount
+                                color: BComStyles.darkGrey
+                                BComTextStyle3 {
+                                    id: paramstextItem
+                                    anchors.fill: parent
+                                    verticalAlignment: Text.AlignVCenter
+                                    horizontalAlignment: Text.AlignHCenter
+                                    anchors.leftMargin: 12
+                                    text: parametersModel.headerData(modelData, Qt.Horizontal)
+                                    elide: Text.ElideRight
+                                    color: BComStyles.white
+                                    font.weight: Font.Light
+                                }
+
+                                Rectangle {
+                                    anchors.right: parent.right
+                                    anchors.top: parent.top
+                                    anchors.bottom: parent.bottom
+                                    anchors.bottomMargin: 1
+                                    anchors.topMargin: 1
+                                    width: 1
+                                    color: "#ccc"
+                                }
+                            }
+                        }
+                    }
+
+                    // Delegate - text items
+                    Component {
+                        id: paramsTextDelegate
+                        Rectangle {
+                            color: "transparent"
+                            implicitWidth: 250
+                            implicitHeight: 50
+                            BComTextStyle3
+                            {
+                                id: rowText
+                                anchors {
+                                    fill: parent
+                                    leftMargin: BComStyles.verticalSpacing
+                                }
+                                verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
+                                text: tabledata
+                                elide: Text.ElideRight
+                                color: "white"
+                            }
+                            MouseArea {
+                                id: mouseRegion
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onClicked: {
+                                    if (mouse.button & Qt.RightButton) {
+                                        console.log( "Clicked" + rowText.text + modulesModel.uuid(modulesModel.index(row,0)))
+                                        modulesTableView.currentUUID = modulesModel.uuid(modulesModel.index(row,0))
+                                        modulesStack.currentIndex = 1
+                                    }
                                 }
                             }
                         }
                     }
                 }
-
-                model: parametersModel
             }
 
             Rectangle {

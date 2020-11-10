@@ -80,8 +80,8 @@ Rectangle {
                 selectFolder: true
                 sidebarVisible: true
                 onAccepted: {
-                    console.log("You chose: " + fileDialog.fileUrls)
-                    user.loadModules(fileDialog.fileUrls,true)
+                    console.log("You chose: " + fileDialog.fileUrl)
+                    user.loadModules(fileDialog.fileUrl,true)
                 }
                 onRejected: {
                     console.log("Canceled")
