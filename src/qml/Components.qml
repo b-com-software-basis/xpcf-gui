@@ -269,25 +269,28 @@ Rectangle {
                     id : componentInfosTableView
                     property bool completed: false // added this property bool in order to sort only when compoent if completely loaded
                     property var currentUUID: 0
-                    columnWidthProvider: function (column) { return 200 }
-                    rowHeightProvider: function (row) { return 50 }
                     anchors.fill: parent
                     anchors.leftMargin: 1
                     anchors.topMargin: 1
                     topMargin: columnsHeader.implicitHeight
-                    model: interfacesModel
                     focus: true
+                    model: interfacesModel
                     delegate: textDelegate
+                    ScrollBar.horizontal: ScrollBar{}
+                    ScrollBar.vertical: ScrollBar{}
+                    ScrollIndicator.horizontal: ScrollIndicator {}
+                    ScrollIndicator.vertical: ScrollIndicator {}
+                    clip: true
 
                     Row {
                         id: columnsHeader
                         y: componentInfosTableView.contentY
-                        //z: 2
+                        z: 2
                         Repeater {
                             model: componentInfosTableView.columns > 0 ? componentInfosTableView.columns : 1
                             Rectangle {
                                 height: 25
-                                width: componentInfosTableView.width / 3 // interfacesModel.columnCount
+                                width: componentInfosTableView.width / 3
                                 color: BComStyles.darkGrey
                                 BComTextStyle3 {
                                     id: textItem
@@ -325,7 +328,8 @@ Rectangle {
                         id: textDelegate
                         Rectangle {
                             color: "transparent"
-                            implicitWidth: 250
+                            implicitWidth: componentInfosTableView.width / 3
+                            width:componentInfosTableView.width / 3
                             implicitHeight: 50
                             BComTextStyle3
                             {
@@ -335,7 +339,7 @@ Rectangle {
                                 horizontalAlignment: Text.AlignHCenter
                                 anchors.leftMargin: BComStyles.verticalSpacing
                                 text: tabledata
-                                elide: Text.ElideRight
+                                elide: Text.ElideRight | Text.el
                                 color: "white"
                             }
                             MouseArea {
@@ -434,15 +438,19 @@ Rectangle {
                     id : paramsTableView
                     property bool completed: false // added this property bool in order to sort only when compoent if completely loaded
                     property var currentUUID: 0
-                    columnWidthProvider: function (column) { return 200 }
-                    rowHeightProvider: function (row) { return 50 }
                     anchors.fill: parent
                     anchors.leftMargin: 1
                     anchors.topMargin: 1
                     topMargin: paramscolumnsHeader.implicitHeight
                     focus: true
-                    delegate: paramsTextDelegate
                     model: parametersModel
+                    delegate: paramsTextDelegate
+                    ScrollBar.horizontal: ScrollBar{}
+                    ScrollBar.vertical: ScrollBar{}
+                    ScrollIndicator.horizontal: ScrollIndicator {}
+                    ScrollIndicator.vertical: ScrollIndicator {}
+                    clip: true
+
                     Component.onCompleted: {
                         completed = true
                         if (modulesCombobox.completed) {
@@ -453,7 +461,7 @@ Rectangle {
                     Row {
                         id: paramscolumnsHeader
                         y: paramsTableView.contentY
-                        //z: 2
+                        z: 2
                         Repeater {
                             model: paramsTableView.columns > 0 ? paramsTableView.columns : 1
                             Rectangle {
@@ -490,7 +498,8 @@ Rectangle {
                         id: paramsTextDelegate
                         Rectangle {
                             color: "transparent"
-                            implicitWidth: 250
+                            implicitWidth: paramsTableView.width / 3
+                            width: paramsTableView.width / 3
                             implicitHeight: 50
                             BComTextStyle3
                             {

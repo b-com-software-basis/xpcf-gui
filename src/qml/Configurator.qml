@@ -240,15 +240,19 @@ Rectangle {
                     id : componentInfosTableView
                     property bool completed: false // added this property bool in order to sort only when compoent if completely loaded
                     property var currentUUID: 0
-                    columnWidthProvider: function (column) { return 200 }
-                    rowHeightProvider: function (row) { return 50 }
                     anchors.fill: parent
                     anchors.leftMargin: 1
                     anchors.topMargin: 1
                     topMargin: paramscolumnsHeader.implicitHeight
-                    model: interfacesModel
                     focus: true
+                    model: interfacesModel
                     delegate: textDelegate
+                    ScrollBar.horizontal: ScrollBar{}
+                    ScrollBar.vertical: ScrollBar{}
+                    ScrollIndicator.horizontal: ScrollIndicator {}
+                    ScrollIndicator.vertical: ScrollIndicator {}
+                    clip: true
+
                     Component.onCompleted: {
                         completed = true
                         if (modulesCombobox.completed) {
@@ -296,7 +300,8 @@ Rectangle {
                         id: textDelegate
                         Rectangle {
                             color: "transparent"
-                            implicitWidth: 250
+                            implicitWidth: componentInfosTableView.width / 3
+                            width: componentInfosTableView.width / 3
                             implicitHeight: 50
                             BComTextStyle3
                             {
@@ -563,8 +568,6 @@ Rectangle {
                     id : selectedComponentTableView
                     property bool completed: false // added this property bool in order to sort only when compoent if completely loaded
                     property var currentUUID: 0
-                    columnWidthProvider: function (column) { return 200 }
-                    rowHeightProvider: function (row) { return 50 }
                     anchors.fill: parent
                     anchors.leftMargin: 1
                     anchors.topMargin: 1
@@ -572,6 +575,11 @@ Rectangle {
                     focus: true
                     model: appComponentModel
                     delegate: selectedComponentTextDelegate
+                    ScrollBar.horizontal: ScrollBar{}
+                    ScrollBar.vertical: ScrollBar{}
+                    ScrollIndicator.horizontal: ScrollIndicator {}
+                    ScrollIndicator.vertical: ScrollIndicator {}
+                    clip: true
 
                     Component.onCompleted: {
                     }
@@ -616,7 +624,8 @@ Rectangle {
                         Rectangle {
                             id: selectedComponentDelegateRect
                             color: "transparent"
-                            implicitWidth: 250
+                            implicitWidth: selectedComponentTableView.width / 3
+                            width: selectedComponentTableView.width / 3
                             implicitHeight: 50
                             BComTextStyle3
                             {
@@ -730,8 +739,6 @@ Rectangle {
                         id : paramsTableView
                         property bool completed: false // added this property bool in order to sort only when compoent if completely loaded
                         property var currentName: 0
-                        columnWidthProvider: function (column) { return 200 }
-                        rowHeightProvider: function (row) { return 50 }
                         anchors.fill: parent
                         anchors.leftMargin: 1
                         anchors.topMargin: 1
@@ -739,6 +746,12 @@ Rectangle {
                         focus: true
                         model: parametersModel
                         delegate: paramsTextDelegate
+                        ScrollBar.horizontal: ScrollBar{}
+                        ScrollBar.vertical: ScrollBar{}
+                        ScrollIndicator.horizontal: ScrollIndicator {}
+                        ScrollIndicator.vertical: ScrollIndicator {}
+                        clip: true
+
                         Component.onCompleted: {
                             completed = true
                             if (modulesCombobox.completed) {
@@ -786,7 +799,8 @@ Rectangle {
                             id: paramsTextDelegate
                             Rectangle {
                                 color: "transparent"
-                                implicitWidth: 250
+                                implicitWidth: paramsTableView.width / 3
+                                width: paramsTableView.width / 3
                                 implicitHeight: 50
                                 BComTextStyle3
                                 {

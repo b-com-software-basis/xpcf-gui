@@ -111,12 +111,7 @@ Rectangle {
                         anchors.leftMargin: 1
                         anchors.topMargin: 1
                         topMargin: columnsHeader.implicitHeight
-                        //sortIndicatorVisible : true
                         model: modulesModel
-                        // currentRow: modulesModel.rowCount ? 0 : -1
-                        // rowDelegate : rowDelegateItem
-                        // headerDelegate: headerDelegateItem
-                        // backgroundVisible : false // fix white area at resize
                         focus: true
                         delegate: textDelegate
 
