@@ -10,6 +10,10 @@ Rectangle {
     objectName: "componentsRootWidget"
     color: BComStyles.darkGrey
 
+    property bool completed: false
+    property bool displayHelp : false
+    property bool closeHelp : false
+
     function addComponentInfos(uuid,name) {
         // int conversion (for sort on integer)
         // componentInfosTableViewModel.append({uuid: uuid, name: name})
@@ -566,37 +570,49 @@ Rectangle {
         bHelp2Visible : true
         bHelp3Visible : true
         text1 : "Your current\ncomponent list"
-        text2 : "Images shared for this component\n(with rights details seen/unseen...)"
-        text3 : "click on an image to display\nimage configuration and download"
+        text2 : "Current component interfaces"
+        text3 : "Current component parameters"
         text1XPart : contentRect.x + componentListRect.x
         text1YPart : contentRect.y + componentListRect.y
-        /*text2XPart : contentRect.x + paramsTableView.x
-        text2YPart : contentRect.y + paramsTableView.y
-        text3XPart : contentRect.x + paramsTableView.x
-        text3YPart : contentRect.y + paramsTableView.y + 100*/
+        text2XPart : contentRect.x + componentInfosTableViewBorderRect.x
+        text2YPart : contentRect.y + componentInfosTableViewBorderRect.y
+        text3XPart : contentRect.x + paramsTableViewBorderRect.x
+        text3YPart : contentRect.y + paramsTableViewBorderRect.y
 
         bHelpCustom1Visible : true
         textCustom1: "display\nmodules\nlist"
-        textCustom1XPart: parent.width-630
-        textCustom1YPart: menuBar.height -20
+        textCustom1XPart: parent.width-600
+        textCustom1YPart: -15
 
         bHelpCustom2Visible : true
         textCustom2: "display\ncomponents"
-        textCustom2XPart: parent.width-510
-        textCustom2YPart: menuBar.height -20
+        textCustom2XPart: parent.width-480
+        textCustom2YPart: -15
 
         bHelpCustom3Visible : true
         textCustom3: "define\ndefault\nparameters"
-        textCustom3XPart: parent.width-285
-        textCustom3YPart: menuBar.height -20
+        textCustom3XPart: parent.width - 220
+        textCustom3YPart: -15
+
+        onHelpVisibleChanged: {
+            if (help.helpVisible == false) {
+                closeHelp = true
+            }
+        }
     }
 
     Component.onCompleted: {
+        completed = true
         /*  if (paramsTableView.completed && modulesCombobox.completed) {
             updateComponentParams(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
         }*/
         if (componentInfosTableView.completed  && modulesCombobox.completed) {
             updateComponentInfos(componentModel.uuid(componentModel.index(componentList.currentIndex,0)))
         }
+    }
+
+    onDisplayHelpChanged: {
+        help.visible = displayHelp
+        help.helpVisible = displayHelp
     }
 }

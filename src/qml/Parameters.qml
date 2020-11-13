@@ -8,6 +8,10 @@ Rectangle {
     objectName: "parametersRootWidget"
     color: BComStyles.darkGrey
 
+    property bool completed: false
+    property bool displayHelp : false
+    property bool closeHelp : false
+
     // Check default params (duration & nbViews not empty)
     function checkParams () {
         if (remakenrootText && xpcfRegistryDefaultPathText && applyButton)
@@ -185,39 +189,48 @@ Rectangle {
             }
         }
 
-        Help {
-            id:help
-            visible:false;
-            bHelp1Visible : true
-            bHelp2Visible : true
-            bHelp3Visible : true
-            bHelp4Visible : true
-            text1 : "Select the path for REMAKENROOT replacement"
-            text2 : "Select the path for default xpcf registry location"
-            text1XPart : remakenrootText.x + remakenrootText.width + contentRect.x
-            text1YPart : remakenrootText.y + contentRect.y - 10
-            text2XPart : xpcfRegistryDefaultPathText.x + xpcfRegistryDefaultPathText.width + contentRect.x
-            text2YPart : xpcfRegistryDefaultPathText.y + contentRect.y
-
-            bHelpCustom1Visible : true
-            textCustom1: "display\nmodules\nlist"
-            textCustom1XPart: parent.width-630
-            textCustom1YPart: -20
-
-            bHelpCustom2Visible : true
-            textCustom2: "display\ncomponents"
-            textCustom2XPart: parent.width-510
-            textCustom2YPart: -20
-
-            bHelpCustom3Visible : true
-            textCustom3: "define\ndefault\nparameters"
-            textCustom3XPart: parent.width-285
-            textCustom3YPart: -20
-        }
-
         Component.onCompleted:
         {
             applyButton.enabled = false
         }
+    }
+
+    Help {
+        id:help
+        visible:false;
+        bHelp1Visible : true
+        bHelp2Visible : true
+        text1 : "Select the path for REMAKENROOT replacement"
+        text2 : "Select the path for default xpcf registry location"
+        text1XPart : remakenrootText.x + remakenrootText.width + contentRect.x
+        text1YPart : remakenrootText.y + contentRect.y - 10
+        text2XPart : xpcfRegistryDefaultPathText.x + xpcfRegistryDefaultPathText.width + contentRect.x
+        text2YPart : xpcfRegistryDefaultPathText.y + contentRect.y
+
+        bHelpCustom1Visible : true
+        textCustom1: "display\nmodules\nlist"
+        textCustom1XPart: parent.width-600
+        textCustom1YPart: -15
+
+        bHelpCustom2Visible : true
+        textCustom2: "display\ncomponents"
+        textCustom2XPart: parent.width-480
+        textCustom2YPart: -15
+
+        bHelpCustom3Visible : true
+        textCustom3: "define\ndefault\nparameters"
+        textCustom3XPart: parent.width - 220
+        textCustom3YPart: -15
+
+        onHelpVisibleChanged: {
+            if (help.helpVisible == false) {
+                closeHelp = true
+            }
+        }
+    }
+
+    onDisplayHelpChanged: {
+        help.visible = displayHelp
+        help.helpVisible = displayHelp
     }
 }

@@ -8,10 +8,11 @@ import SortFilterProxyModel 0.1
 Rectangle {
     id: modulesRootWidget
     objectName: "modulesRootWidget"
-    //   border.width: 5
-    //  border.color: BComStyles.blue
-
     color: BComStyles.darkGrey
+
+    property bool completed: false
+    property bool displayHelp : false
+    property bool closeHelp : false
 
     function addModule(name,path,uuid) {
         // moduleTableViewModel.append({name: name, path: path, uuid: uuid})
@@ -198,27 +199,39 @@ Rectangle {
         id:help
         visible:false;
         bHelp1Visible : true
-        bHelp3Visible : true
+        bHelp2Visible : true
         text1 : "Drop an XPCF module to introspect it"
-        text3 : "Display module list by name"
+        text2 : "Display module list by name"
         text1XPart : dropWidget.x + 30
         text1YPart : widgetRect.y + dropWidget.y + 10
-        text3XPart : dropWidget.x + 30
-        text3YPart : widgetRect.y + dropWidget.y + dropWidget.height + 45
+        text2XPart : text1XPart
+        text2YPart : widgetRect.y + borderRect.y + 45
 
         bHelpCustom1Visible : true
         textCustom1: "display\nmodule\ncomponents"
-        textCustom1XPart: parent.width-765
-        textCustom1YPart: menuBar.height -20
+        textCustom1XPart: parent.width-730
+        textCustom1YPart: -15
 
-        bHelpCustom3Visible : true
-        textCustom3: "define\ndefault\nparameters"
-        textCustom3XPart: parent.width - 255
-        textCustom3YPart: menuBar.height - 20
+        bHelpCustom2Visible : true
+        textCustom2: "define\ndefault\nparameters"
+        textCustom2XPart: parent.width - 220
+        textCustom2YPart: -15
+
+        onHelpVisibleChanged: {
+            if (help.helpVisible == false) {
+                closeHelp = true
+            }
+        }
     }
 
     Component.onCompleted: {
+        completed = true
         //modulesTableView.visible = rootWidget.displayModules;
         updateHelpText4();
+    }
+
+    onDisplayHelpChanged: {
+        help.visible = displayHelp
+        help.helpVisible = displayHelp
     }
 }

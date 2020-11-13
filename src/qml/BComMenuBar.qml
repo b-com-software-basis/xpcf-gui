@@ -9,12 +9,12 @@ Rectangle {
     Layout.fillWidth: true
     color: "transparent"
     height:40
+
     property alias currentTitle : currentTitleText.text
     property alias productTitle : producttext.text
     property int currentIndex
-    property bool displayHelp
     property var previousButton
-
+    property bool displayHelp
 
     function toggleSelected(button,index) {
         if (button !== previousButton) {

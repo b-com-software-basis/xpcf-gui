@@ -12,6 +12,7 @@ ApplicationWindow {
     title: "xpcf Configuration Editor"
     FontLoader { id: bcombold; source: "fonts/Bcom-SemiBold.otf" }
     FontLoader { id: bcom; source: "fonts/Bcom-Light.otf" }
+
     ColumnLayout {
         anchors.fill: parent
         Layout.fillWidth: true
@@ -20,6 +21,25 @@ ApplicationWindow {
 
         BComMenuBar {
             id: menuBar
+
+            onDisplayHelpChanged:{
+                if (displayHelp == true) {
+                    home.closeHelp = false
+                    modules.closeHelp = false
+                    components.closeHelp = false
+                    interfaces.closeHelp = false
+                    configurator.closeHelp = false
+                    parameters.closeHelp = false
+                }
+
+                home.displayHelp = displayHelp
+                modules.displayHelp = displayHelp
+                components.displayHelp = displayHelp
+                interfaces.displayHelp = displayHelp
+                configurator.displayHelp = displayHelp
+                parameters.displayHelp = displayHelp
+            }
+
             productTitle: "*" + rootWindow.title + "*"
             currentTitle: "/ home"
         }
@@ -29,13 +49,53 @@ ApplicationWindow {
             Layout.fillHeight: true
             currentIndex: menuBar.currentIndex
             Home {
-                displayHelp: menuBar.displayHelp
+                id: home
+                onCloseHelpChanged: {
+                    if (home.closeHelp == true) {
+                        menuBar.displayHelp = false
+                    }
+                }
             }
-            Modules {}
-            Components {}
-            Interfaces {}
-            Configurator {}
-            Parameters {}
+            Modules {
+                id: modules
+                onCloseHelpChanged: {
+                    if (modules.closeHelp == true) {
+                        menuBar.displayHelp = false
+                    }
+                }
+            }
+            Components {
+                id: components
+                onCloseHelpChanged: {
+                    if (components.closeHelp == true) {
+                        menuBar.displayHelp = false
+                    }
+                }
+            }
+            Interfaces {
+                id: interfaces
+                onCloseHelpChanged: {
+                    if (interfaces.closeHelp == true) {
+                        menuBar.displayHelp = false
+                    }
+                }
+            }
+
+            Configurator {
+                id: configurator
+                onCloseHelpChanged: {
+                    if (configurator.closeHelp == true) {
+                        menuBar.displayHelp = false
+                    }
+                }
+            }
+            Parameters {
+                id: parameters
+                onCloseHelpChanged: {
+                    if (parameters.closeHelp == true) {
+                        menuBar.displayHelp = false
+                    }
+                }}
         }
     }
 }

@@ -13,6 +13,8 @@ Rectangle {
     visible : true
     color:"black"
 
+    property bool helpVisible: false
+
     // internal properties
     property int pictoSize : 44
     property int textWidth : 497
@@ -25,7 +27,7 @@ Rectangle {
     property alias bHelp4Visible : helpArea4.visible
     property alias bHelp5Visible : helpArea5.visible
     property alias bHelp6Visible : helpArea6.visible
-    property alias title : titleText.text
+    //property alias title : titleText.text
     property alias text1 : helpText_1.text
     property alias text2 : helpText_2.text
     property alias text3 : helpText_3.text
@@ -68,7 +70,7 @@ Rectangle {
         anchors.fill: parent
     }
 
-    Rectangle {
+    /*Rectangle {
 
         id:titleArea
         anchors.top : parent.top
@@ -87,25 +89,27 @@ Rectangle {
 
         }
         color: "transparent"
-    }
+    }*/
 
-
-    Button {
-        Image {source:"images/closebuttonimage.png"  }  //button close help
+    BComButton2 {
         id:closebuttonimage
+        buttonColor: BComStyles.darkGrey
+        Image {
+            source:"images/closebuttonimage.png"
+            anchors.centerIn: parent}
         anchors.top : parent.top
-        anchors.topMargin: BComStyles.rightMargin*2
+        anchors.topMargin: BComStyles.verticalSpacing
         anchors.right : parent.right
         anchors.rightMargin: BComStyles.rightMargin
         width:40
         height:40
-
-        onClicked: helpoverlaybloc_75.visible=false
-        style: ButtonStyle {
-            background: Rectangle {
-                color: "transparent"
-            }
+        enabled: true
+        onClicked: {
+            helpVisible = false
+            //helpoverlaybloc_75.visible=false
         }
+
+        tooltip: "close help"
     }
 
     // Help 1

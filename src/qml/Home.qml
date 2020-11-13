@@ -12,7 +12,13 @@ Rectangle {
     objectName: "modulesRootWidget"
     color: BComStyles.darkGrey
 
-    property bool displayHelp
+    property bool completed: false
+    property bool displayHelp : false
+    property bool closeHelp : false
+
+    Component.onCompleted: {
+        completed = true
+    }
 
     function addModule(name,path,uuid) {
         // moduleTableViewModel.append({name: name, path: path, uuid: uuid})
@@ -111,24 +117,35 @@ Rectangle {
 
     Help {
         id:help
-        visible:displayHelp
+        visible:false
         bHelp1Visible : true
-        bHelp3Visible : true
+        bHelp2Visible : true
         text1 : "Drop an XPCF module to introspect it"
-        text3 : "Display module list by name"
+        text2 : "Open a folder containing XPCF modules (recursive)"
         text1XPart : dropWidget.x + 30
         text1YPart : widgetRect.y + dropWidget.y + 10
-        text3XPart : dropWidget.x + 30
-        text3YPart : widgetRect.y + dropWidget.y + dropWidget.height + 45
+        text2XPart : loadModulesButton.x + 30
+        text2YPart : widgetRect.y + loadModulesButton.y
 
         bHelpCustom1Visible : true
-        textCustom1: "display\nmodule\ncomponents"
-        textCustom1XPart: parent.width-765
-        textCustom1YPart: menuBar.height -20
+        textCustom1: "display\nhome"
+        textCustom1XPart: parent.width-920
+        textCustom1YPart: -15
 
-        bHelpCustom3Visible : true
-        textCustom3: "define\ndefault\nparameters"
-        textCustom3XPart: parent.width - 255
-        textCustom3YPart: menuBar.height - 20
+        bHelpCustom2Visible : true
+        textCustom2: "define\ndefault\nparameters"
+        textCustom2XPart: parent.width - 220
+        textCustom2YPart: -15
+
+        onHelpVisibleChanged: {
+            if (help.helpVisible == false) {
+                closeHelp = true
+            }
+        }
+    }
+
+    onDisplayHelpChanged: {
+        help.visible = displayHelp
+        help.helpVisible = displayHelp
     }
 }
